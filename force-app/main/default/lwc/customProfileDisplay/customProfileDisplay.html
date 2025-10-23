@@ -1,0 +1,227 @@
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Profile Display Container -->
+    <div class="profile-container">
+        <!-- Header Section -->
+        <div class="profile-header">
+            <div class="header-content">
+                <h1 class="profile-title">{displayName}</h1>
+                <p class="profile-subtitle">Manage your personal information and account settings</p>
+            </div>
+            <template if:false={isEditing}>
+                <button class="edit-button" onclick={handleEdit}>
+                    <svg class="edit-icon" viewBox="0 0 24 24">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    Edit Profile
+                </button>
+            </template>
+        </div>
+
+        <!-- Personal Information Section -->
+        <div class="profile-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="field-grid">
+                <!-- First Name -->
+                <div class="field-container">
+                    <label class="field-label">First Name</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.firstName}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.firstName} 
+                               data-field="firstName"
+                               onchange={handleInputChange}
+                               placeholder="Enter first name">
+                    </template>
+                </div>
+
+                <!-- Last Name -->
+                <div class="field-container">
+                    <label class="field-label">Last Name</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.lastName}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.lastName} 
+                               data-field="lastName"
+                               onchange={handleInputChange}
+                               placeholder="Enter last name">
+                    </template>
+                </div>
+
+                <!-- Email -->
+                <div class="field-container">
+                    <label class="field-label">Email</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.personEmail}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="email" 
+                               class="field-input" 
+                               value={editData.personEmail} 
+                               data-field="personEmail"
+                               onchange={handleInputChange}
+                               placeholder="Enter email address">
+                    </template>
+                </div>
+
+                <!-- Phone -->
+                <div class="field-container">
+                    <label class="field-label">Phone</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.phone}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="tel" 
+                               class="field-input" 
+                               value={editData.phone} 
+                               data-field="phone"
+                               onchange={handleInputChange}
+                               placeholder="Enter phone number">
+                    </template>
+                </div>
+
+                <!-- Age -->
+                <div class="field-container">
+                    <label class="field-label">Age</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.age}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="number" 
+                               class="field-input" 
+                               value={editData.age} 
+                               data-field="age"
+                               onchange={handleInputChange}
+                               placeholder="Enter age"
+                               min="18" max="120">
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Information Section -->
+        <div class="profile-section">
+            <h2 class="section-title">Address Information</h2>
+            <div class="field-grid">
+                <!-- Street Address -->
+                <div class="field-container full-width">
+                    <label class="field-label">Street Address</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.billingStreet}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.billingStreet} 
+                               data-field="billingStreet"
+                               onchange={handleInputChange}
+                               placeholder="Enter street address">
+                    </template>
+                </div>
+
+                <!-- City -->
+                <div class="field-container">
+                    <label class="field-label">City</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.billingCity}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.billingCity} 
+                               data-field="billingCity"
+                               onchange={handleInputChange}
+                               placeholder="Enter city">
+                    </template>
+                </div>
+
+                <!-- State -->
+                <div class="field-container">
+                    <label class="field-label">State</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.billingState}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.billingState} 
+                               data-field="billingState"
+                               onchange={handleInputChange}
+                               placeholder="Enter state">
+                    </template>
+                </div>
+
+                <!-- Postal Code -->
+                <div class="field-container">
+                    <label class="field-label">Postal Code</label>
+                    <template if:false={isEditing}>
+                        <div class="field-value">{accountData.billingPostalCode}</div>
+                    </template>
+                    <template if:true={isEditing}>
+                        <input type="text" 
+                               class="field-input" 
+                               value={editData.billingPostalCode} 
+                               data-field="billingPostalCode"
+                               onchange={handleInputChange}
+                               placeholder="Enter postal code">
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Information Section -->
+        <div class="profile-section">
+            <h2 class="section-title">Credit Information</h2>
+            <div class="credit-info-grid">
+                <!-- Current Credit Score -->
+                <div class="credit-score-card">
+                    <div class="credit-score-header">
+                        <h3>Current Credit Score</h3>
+                        <div class={creditScoreClass}>
+                            <span class="score-number">{formattedCreditScore}</span>
+                        </div>
+                    </div>
+                    <div class="credit-score-details">
+                        <p class="last-updated">Last Updated: {formattedLastCalculation}</p>
+                    </div>
+                </div>
+
+                <!-- External Customer ID -->
+                <div class="field-container">
+                    <label class="field-label">Customer ID</label>
+                    <div class="field-value readonly">{accountData.externalCustomerId}</div>
+                    <small class="field-help">This ID is used for external integrations</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons for Edit Mode -->
+        <template if:true={isEditing}>
+            <div class="action-buttons">
+                <button class="save-button" onclick={handleSave} disabled={isLoading}>
+                    <template if:false={isLoading}>Save Changes</template>
+                    <template if:true={isLoading}>Saving...</template>
+                </button>
+                <button class="cancel-button" onclick={handleCancel} disabled={isLoading}>
+                    Cancel
+                </button>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,379 @@
+/*_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________*/
+
+/* Executive Analytics Container */
+.executive-analytics-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Page Header Styling */
+.slds-page-header {
+    background: linear-gradient(135deg, #6b46c1 0%, #7c3aed 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.slds-page-header__title {
+    color: white;
+}
+
+.slds-page-header__name-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Metric Cards */
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.metric-customers {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.metric-scores {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.metric-average {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.metric-health {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+/* Tab Enhancements */
+.slds-tabs_default__nav {
+    border-bottom: 2px solid #e5e5e5;
+    background-color: white;
+}
+
+.slds-tabs_default__item.slds-is-active .slds-tabs_default__link {
+    background-color: #6b46c1;
+    color: white;
+    border-radius: 4px 4px 0 0;
+}
+
+.slds-tabs_default__link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.slds-tabs_default__link:hover {
+    background-color: #f3f3f3;
+    color: #6b46c1;
+}
+
+/* Score Indicator */
+.score-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Card Enhancements */
+.slds-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.slds-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Table Enhancements */
+.slds-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.slds-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.slds-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Button Enhancements */
+.slds-button_brand {
+    background: linear-gradient(135deg, #6b46c1 0%, #7c3aed 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.slds-button_brand:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+}
+
+.slds-button_neutral {
+    border: 1px solid #d8dde6;
+    transition: all 0.2s ease;
+}
+
+.slds-button_neutral:hover {
+    background-color: #f3f3f3;
+    border-color: #6b46c1;
+    color: #6b46c1;
+}
+
+.slds-button_destructive {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.slds-button_destructive:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Form Elements */
+.slds-input:focus,
+.slds-textarea:focus {
+    border-color: #6b46c1;
+    box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.1);
+}
+
+.slds-form-element__label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Empty State Styling */
+.slds-align_absolute-center {
+    padding: 3rem 1rem;
+}
+
+.slds-align_absolute-center .slds-text-heading_medium {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.slds-align_absolute-center .slds-text-body_regular {
+    color: #666;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Warning Box Styling */
+.slds-theme_warning {
+    background-color: #fef3cd;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+}
+
+.slds-theme_warning h3 {
+    color: #92400e;
+}
+
+.slds-theme_warning .slds-list_dotted .slds-item {
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+/* Health Score Indicators */
+.health-excellent {
+    color: #10b981;
+}
+
+.health-good {
+    color: #f59e0b;
+}
+
+.health-warning {
+    color: #f97316;
+}
+
+.health-poor {
+    color: #ef4444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .executive-analytics-container {
+        padding: 0.5rem;
+    }
+    
+    .slds-page-header {
+        border-radius: 0;
+    }
+    
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .slds-scrollable_x {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .slds-table {
+        min-width: 600px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slds-tabs_default__link {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .slds-grid.slds-gutters {
+        margin: 0;
+    }
+    
+    .slds-col {
+        padding: 0.25rem;
+    }
+    
+    .metric-card .slds-media {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Focus States for Accessibility */
+.slds-tabs_default__link:focus {
+    outline: 2px solid #6b46c1;
+    outline-offset: 2px;
+}
+
+.slds-button:focus {
+    outline: 2px solid #6b46c1;
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .executive-analytics-container {
+        background-color: white;
+    }
+    
+    .metric-card {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc;
+    }
+    
+    .slds-page-header {
+        background: white !important;
+        color: black !important;
+        border-bottom: 2px solid #ccc;
+    }
+    
+    .slds-button {
+        display: none;
+    }
+    
+    .slds-tabs_default__nav {
+        display: none;
+    }
+    
+    .loading-overlay {
+        display: none;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .metric-card {
+        border: 2px solid #000;
+    }
+    
+    .slds-table th {
+        border: 2px solid #000;
+    }
+    
+    .score-indicator {
+        border: 1px solid #000;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .executive-analytics-container {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .slds-card {
+        background-color: #2a2a2a;
+        border-color: #444;
+    }
+    
+    .slds-table th {
+        background-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .slds-table tbody tr:hover {
+        background-color: #333;
+    }
+}
+
+/*__________________________GenAI: Generated code ends here______________________________*/

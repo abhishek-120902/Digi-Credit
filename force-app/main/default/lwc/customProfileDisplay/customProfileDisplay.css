@@ -1,0 +1,423 @@
+/* Profile Container */
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1B96FF 0%, #0176D3 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(27, 150, 255, 0.2);
+}
+
+.header-content {
+    flex: 1;
+}
+
+.profile-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: white;
+}
+
+.profile-subtitle {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.9;
+    color: white;
+}
+
+.edit-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.edit-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.edit-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+/* Profile Sections */
+.profile-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e5e9;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+/* Field Grid Layout */
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.field-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.field-container.full-width {
+    grid-column: 1 / -1;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.field-value {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    color: #333;
+    font-size: 1rem;
+    min-height: 20px;
+}
+
+.field-value.readonly {
+    background: #f0f2f5;
+    color: #666;
+    font-family: 'Courier New', monospace;
+}
+
+.field-input {
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.field-input:focus {
+    outline: none;
+    border-color: #1B96FF;
+    box-shadow: 0 0 0 3px rgba(27, 150, 255, 0.1);
+}
+
+.field-help {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Credit Information Grid */
+.credit-info-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.credit-score-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+}
+
+.credit-score-header {
+    margin-bottom: 16px;
+}
+
+.credit-score-header h3 {
+    margin: 0 0 16px 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.score-number {
+    font-size: 3rem;
+    font-weight: 700;
+    display: block;
+    margin: 8px 0;
+}
+
+.score-excellent .score-number {
+    color: #4bca81;
+}
+
+.score-good .score-number {
+    color: #ffb75d;
+}
+
+.score-poor .score-number {
+    color: #c23934;
+}
+
+.credit-score-details {
+    border-top: 1px solid #e1e5e9;
+    padding-top: 16px;
+}
+
+.last-updated {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.save-button {
+    background: #1B96FF;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.save-button:hover:not(:disabled) {
+    background: #0176D3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 150, 255, 0.3);
+}
+
+.save-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background: transparent;
+    color: #666;
+    border: 2px solid #e1e5e9;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.cancel-button:hover:not(:disabled) {
+    border-color: #c23934;
+    color: #c23934;
+    background: rgba(194, 57, 52, 0.05);
+}
+
+.cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loading Spinner */
+.slds-spinner_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.slds-spinner {
+    width: 2rem;
+    height: 2rem;
+}
+
+.slds-spinner_medium {
+    width: 2rem;
+    height: 2rem;
+}
+
+.slds-spinner__dot-a,
+.slds-spinner__dot-b {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 100%;
+    background-color: #1B96FF;
+    display: inline-block;
+    animation: slds-spinner-dot 1.4s ease-in-out infinite both;
+}
+
+.slds-spinner__dot-a {
+    animation-delay: -0.32s;
+}
+
+.slds-spinner__dot-b {
+    animation-delay: -0.16s;
+}
+
+@keyframes slds-spinner-dot {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+.slds-assistive-text {
+    position: absolute !important;
+    margin: -1px !important;
+    border: 0 !important;
+    padding: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 16px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 24px;
+    }
+
+    .profile-title {
+        font-size: 2rem;
+    }
+
+    .profile-section {
+        padding: 20px;
+    }
+
+    .field-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .credit-info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .save-button,
+    .cancel-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-title {
+        font-size: 1.75rem;
+    }
+
+    .profile-subtitle {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .score-number {
+        font-size: 2.5rem;
+    }
+}
+
+/* Focus and Accessibility */
+.field-input:focus,
+.save-button:focus,
+.cancel-button:focus,
+.edit-button:focus {
+    outline: 2px solid #1B96FF;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .profile-header {
+        background: #000;
+        color: #fff;
+    }
+
+    .field-value {
+        border-color: #000;
+    }
+
+    .field-input {
+        border-color: #000;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

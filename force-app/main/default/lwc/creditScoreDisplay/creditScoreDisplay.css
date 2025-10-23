@@ -1,0 +1,211 @@
+/*_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________*/
+
+/* Score Circle Styles */
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+    border: 4px solid;
+}
+
+.score-red {
+    background-color: #c23934;
+    border-color: #a61e1a;
+    color: white;
+}
+
+.score-yellow {
+    background-color: #ffb75d;
+    border-color: #fe9339;
+    color: #333;
+}
+
+.score-green {
+    background-color: #4bca81;
+    border-color: #2e844a;
+    color: white;
+}
+
+.score-gray {
+    background-color: #747474;
+    border-color: #5c5c5c;
+    color: white;
+}
+
+.score-number {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Score Status Styles */
+.score-status {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.status-poor {
+    background-color: #c23934;
+    color: white;
+}
+
+.status-good {
+    background-color: #ffb75d;
+    color: #333;
+}
+
+.status-excellent {
+    background-color: #4bca81;
+    color: white;
+}
+
+.status-unknown {
+    background-color: #747474;
+    color: white;
+}
+
+.score-status-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Progress Bar Styles */
+.score-progress-red {
+    background-color: #c23934;
+}
+
+.score-progress-yellow {
+    background-color: #ffb75d;
+}
+
+.score-progress-green {
+    background-color: #4bca81;
+}
+
+.score-progress-gray {
+    background-color: #747474;
+}
+
+/* Score Breakdown Styles */
+.score-breakdown-item {
+    background-color: #f3f3f3;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    height: 100%;
+    border: 1px solid #e5e5e5;
+    transition: all 0.2s ease;
+}
+
+.score-breakdown-item:hover {
+    background-color: #e8f4fd;
+    border-color: #1589ee;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.breakdown-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1589ee;
+    margin: 0.5rem 0;
+}
+
+.breakdown-label {
+    font-size: 0.75rem;
+    color: #747474;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Animation for score changes */
+@keyframes scoreUpdate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.score-circle.updating {
+    animation: scoreUpdate 0.6s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .score-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .score-number {
+        font-size: 1.5rem;
+    }
+    
+    .breakdown-score {
+        font-size: 1.25rem;
+    }
+}
+
+/* Loading state styles */
+.loading-overlay {
+    position: relative;
+}
+
+.loading-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Warning box enhancements */
+.slds-theme_warning {
+    border-left: 4px solid #ffb75d;
+}
+
+/* Modal enhancements */
+.slds-modal__container {
+    max-width: 600px;
+}
+
+/* Accessibility improvements */
+.score-circle:focus {
+    outline: 2px solid #1589ee;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .score-circle {
+        border: 2px solid #000;
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+    
+    .score-breakdown-item {
+        border: 1px solid #000;
+        background-color: #fff;
+    }
+}
+
+/*__________________________GenAI: Generated code ends here______________________________*/

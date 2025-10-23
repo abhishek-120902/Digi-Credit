@@ -1,0 +1,408 @@
+<!--_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________-->
+
+<template>
+    <div class="executive-analytics-container">
+        <!-- Header -->
+        <div class="slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:dashboard" size="large"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title={analyticsTitle}>
+                                            {analyticsTitle}
+                                        </span>
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta">System Performance & Configuration Management</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <lightning-button 
+                            label="Refresh Analytics" 
+                            variant="neutral" 
+                            onclick={handleRefreshAnalytics}
+                            disabled={isLoading}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="slds-tabs_default slds-m-top_large">
+            <ul class="slds-tabs_default__nav" role="tablist">
+                <li class={tabClasses.overview} title="System Overview" role="presentation">
+                    <a class="slds-tabs_default__link" href="#" role="tab" data-tab="overview" onclick={handleTabClick}>
+                        <lightning-icon icon-name="utility:overview" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Overview
+                    </a>
+                </li>
+                <li class={tabClasses.analytics} title="Analytics & Reports" role="presentation">
+                    <a class="slds-tabs_default__link" href="#" role="tab" data-tab="analytics" onclick={handleTabClick}>
+                        <lightning-icon icon-name="utility:chart" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Analytics
+                    </a>
+                </li>
+                <li class={tabClasses.configuration} title="System Configuration" role="presentation">
+                    <a class="slds-tabs_default__link" href="#" role="tab" data-tab="configuration" onclick={handleTabClick}>
+                        <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Configuration
+                    </a>
+                </li>
+                <li class={tabClasses.operations} title="System Operations" role="presentation">
+                    <a class="slds-tabs_default__link" href="#" role="tab" data-tab="operations" onclick={handleTabClick}>
+                        <lightning-icon icon-name="utility:process" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Operations
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Overview Tab -->
+            <template if:true={isOverviewTab}>
+                <div class="slds-tabs_default__content" role="tabpanel">
+                    <!-- Key Metrics Cards -->
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_large">
+                        <!-- Total Customers -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-box_small metric-card metric-customers">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon icon-name="standard:account" size="medium" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h3 class="slds-text-heading_small">Total Customers</h3>
+                                        <p class="slds-text-heading_large">{totalCustomers}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Scores Calculated -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-box_small metric-card metric-scores">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon icon-name="utility:trending" size="medium" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h3 class="slds-text-heading_small">Scores Calculated</h3>
+                                        <p class="slds-text-heading_large">{totalScoresCalculated}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Average Credit Score -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-box_small metric-card metric-average">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon icon-name="utility:target" size="medium" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h3 class="slds-text-heading_small">Average Score</h3>
+                                        <p class="slds-text-heading_large">{averageCreditScore}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Health -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-box_small metric-card metric-health">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon icon-name="utility:heart" size="medium" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h3 class="slds-text-heading_small">System Health</h3>
+                                        <p class="slds-text-heading_large">{systemHealthScore}%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats and Performance -->
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Performance Summary -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                            <lightning-card title="Performance Summary" icon-name="utility:summary">
+                                <div class="slds-p-around_medium">
+                                    <div class="slds-grid slds-gutters slds-wrap">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <dl class="slds-list_horizontal slds-wrap">
+                                                <dt class="slds-item_label slds-text-color_weak">Pending Requests:</dt>
+                                                <dd class="slds-item_detail">{pendingRequests}</dd>
+                                                <dt class="slds-item_label slds-text-color_weak">Completed Today:</dt>
+                                                <dd class="slds-item_detail">{completedRequestsToday}</dd>
+                                            </dl>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <dl class="slds-list_horizontal slds-wrap">
+                                                <dt class="slds-item_label slds-text-color_weak">Poor Scores:</dt>
+                                                <dd class="slds-item_detail">{poorScorePercentage}%</dd>
+                                                <dt class="slds-item_label slds-text-color_weak">Excellent Scores:</dt>
+                                                <dd class="slds-item_detail">{excellentScorePercentage}%</dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </div>
+
+                        <!-- Score Distribution -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                            <lightning-card title="Score Distribution" icon-name="utility:pie_chart">
+                                <div class="slds-p-around_medium">
+                                    <template for:each={scoreDistributionData} for:item="segment">
+                                        <div key={segment.label} class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                            <div class="slds-col">
+                                                <div class="slds-media slds-media_center">
+                                                    <div class="slds-media__figure">
+                                                        <span class="score-indicator" style={segment.colorStyle}></span>
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <span class="slds-text-body_regular">{segment.label}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col slds-no-flex">
+                                                <span class="slds-text-heading_small">{segment.value}</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Analytics Tab -->
+            <template if:true={isAnalyticsTab}>
+                <div class="slds-tabs_default__content" role="tabpanel">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Detailed Analytics -->
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-card title="System Analytics Dashboard" icon-name="utility:chart">
+                                <div class="slds-p-around_medium">
+                                    <template if:true={hasAnalyticsData}>
+                                        <div class="slds-text-align_center slds-p-around_large">
+                                            <lightning-icon icon-name="utility:chart" size="large" variant="warning"></lightning-icon>
+                                            <h3 class="slds-text-heading_medium slds-m-top_small">Advanced Analytics</h3>
+                                            <p class="slds-text-body_regular slds-m-top_small">
+                                                Detailed charts and analytics would be implemented here using Chart.js or similar charting library.
+                                            </p>
+                                            <div class="slds-m-top_medium">
+                                                <lightning-button label="View Detailed Reports" variant="brand"></lightning-button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template if:false={hasAnalyticsData}>
+                                        <div class="slds-align_absolute-center slds-p-around_large">
+                                            <div class="slds-text-align_center">
+                                                <lightning-icon icon-name="utility:info" size="large" variant="warning"></lightning-icon>
+                                                <h3 class="slds-text-heading_medium slds-m-top_small">No Analytics Data</h3>
+                                                <p class="slds-text-body_regular slds-m-top_small">
+                                                    Analytics data is not available at this time.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Configuration Tab -->
+            <template if:true={isConfigurationTab}>
+                <div class="slds-tabs_default__content" role="tabpanel">
+                    <lightning-card title="Credit Score Configuration" icon-name="utility:settings">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasConfiguration}>
+                                <template if:false={isEditingConfig}>
+                                    <!-- View Mode -->
+                                    <div class="slds-m-bottom_medium">
+                                        <lightning-button label="Edit Configuration" variant="brand" onclick={handleEditConfiguration}></lightning-button>
+                                    </div>
+                                    <div class="slds-scrollable_x">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Field Label</th>
+                                                    <th scope="col">Field API Name</th>
+                                                    <th scope="col">Weight</th>
+                                                    <!-- <th scope="col">Active</th> -->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={creditScoreConfig} for:item="config">
+                                                    <tr key={config.Id}>
+                                                        <td>{config.Field_Label__c}</td>
+                                                        <td>{config.Field_API_Name__c}</td>
+                                                        <td>{config.Weight__c}</td>
+                                                        <!-- <td>
+                                                            <lightning-icon 
+                                                                icon-name={config.Is_Active__c ? 'utility:check' : 'utility:close'}
+                                                                variant={config.Is_Active__c ? 'success' : 'error'}
+                                                                size="small">
+                                                            </lightning-icon>
+                                                        </td> -->
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+
+                                <template if:true={isEditingConfig}>
+                                    <!-- Edit Mode -->
+                                    <div class="slds-m-bottom_medium">
+                                        <lightning-button 
+                                            label="Save Configuration" 
+                                            variant="brand" 
+                                            onclick={handleSaveConfiguration}
+                                            disabled={isSaving}
+                                            class="slds-m-right_small">
+                                        </lightning-button>
+                                        <lightning-button 
+                                            label="Cancel" 
+                                            variant="neutral" 
+                                            onclick={handleCancelConfigEdit}
+                                            disabled={isSaving}>
+                                        </lightning-button>
+                                    </div>
+                                    <div class="slds-scrollable_x">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Field Label</th>
+                                                    <th scope="col">Field API Name</th>
+                                                    <th scope="col">Weight</th>
+                                                    <th scope="col">Active</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={editableConfig} for:item="config">
+                                                    <tr key={config.Id}>
+                                                        <td>{config.Field_Label__c}</td>
+                                                        <td>{config.Field_API_Name__c}</td>
+                                                        <td>
+                                                            <lightning-input 
+                                                                type="number" 
+                                                                value={config.Weight__c}
+                                                                name={config.Id}
+                                                                onchange={handleWeightChange}
+                                                                min="0"
+                                                                max="100"
+                                                                step="0.1">
+                                                            </lightning-input>
+                                                        </td>
+                                                        <td>
+                                                            <lightning-input 
+                                                                type="checkbox" 
+                                                                checked={config.Is_Active__c}
+                                                                name={config.Id}
+                                                                onchange={handleActiveChange}>
+                                                            </lightning-input>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <template if:false={hasConfiguration}>
+                                <div class="slds-align_absolute-center slds-p-around_large">
+                                    <div class="slds-text-align_center">
+                                        <lightning-icon icon-name="utility:info" size="large" variant="warning"></lightning-icon>
+                                        <h3 class="slds-text-heading_medium slds-m-top_small">No Configuration Found</h3>
+                                        <p class="slds-text-body_regular slds-m-top_small">
+                                            No credit score configuration records found. Please set up the configuration first.
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+            </template>
+
+            <!-- Operations Tab -->
+            <template if:true={isOperationsTab}>
+                <div class="slds-tabs_default__content" role="tabpanel">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- System Operations -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-card title="System Operations" icon-name="utility:process">
+                                <div class="slds-p-around_medium">
+                                    <div class="slds-grid slds-grid_vertical slds-grid_vertical-stretch">
+                                        <lightning-button 
+                                            label="System-wide Recalculation" 
+                                            variant="destructive" 
+                                            onclick={handleSystemRecalculation}
+                                            disabled={isBulkProcessing}
+                                            class="slds-m-bottom_medium">
+                                        </lightning-button>
+                                        <lightning-button 
+                                            label="Refresh Analytics" 
+                                            variant="brand" 
+                                            onclick={handleRefreshAnalytics}
+                                            disabled={isLoading}
+                                            class="slds-m-bottom_medium">
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </div>
+
+                        <!-- Operation Guidelines -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-card title="Operation Guidelines" icon-name="utility:info">
+                                <div class="slds-p-around_medium">
+                                    <div class="slds-box slds-theme_warning">
+                                        <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                            <lightning-icon icon-name="utility:warning" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                            Important Notes
+                                        </h3>
+                                        <ul class="slds-list_dotted">
+                                            <li class="slds-item">System-wide recalculation affects all customer records</li>
+                                            <li class="slds-item">Operations run asynchronously and may take time</li>
+                                            <li class="slds-item">Monitor system performance during bulk operations</li>
+                                            <li class="slds-item">Configuration changes require system recalculation</li>
+                                            <li class="slds-item">Always backup data before major operations</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Loading Overlay -->
+        <template if:true={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>
+
+<!--__________________________GenAI: Generated code ends here______________________________-->

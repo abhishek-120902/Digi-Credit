@@ -1,0 +1,184 @@
+<template>
+    <!-- Success Message Display -->
+    <template if:true={showSuccessMessage}>
+        <div class="success-container">
+            <div class="success-card">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" class="checkmark">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                </div>
+                <h2 class="success-title">Request Submitted Successfully!</h2>
+                <p class="success-message">
+                    Your credit score request has been submitted and is being processed. 
+                    You will receive an email notification when your score is ready.
+                </p>
+                <div class="success-details">
+                    <p><strong>Estimated Completion:</strong> {estimatedCompletion}</p>
+                    <p><strong>Request Channel:</strong> {formData.requestChannel}</p>
+                </div>
+                <div class="success-actions">
+                    <button class="dashboard-button" onclick={handleBackToDashboard}>
+                        Return to Dashboard
+                    </button>
+                    <button class="new-request-button" onclick={handleReset}>
+                        Submit Another Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main Request Form -->
+    <template if:false={showSuccessMessage}>
+        <div class="request-container">
+            <!-- Header Section -->
+            <div class="request-header">
+                <div class="header-content">
+                    <h1 class="page-title">Request New Credit Score</h1>
+                    <p class="page-subtitle">Get your latest credit score calculation with updated information</p>
+                </div>
+                <div class="header-info">
+                    <div class="info-card">
+                        <span class="info-label">Request Date</span>
+                        <span class="info-value">{currentDate}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Processing Time</span>
+                        <span class="info-value">Up to 24 hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request Form -->
+            <div class="form-container">
+                <form class="request-form">
+                    <!-- Welcome Message -->
+                    <div class="welcome-section">
+                        <h2 class="welcome-title">{welcomeMessage}</h2>
+                        <p class="welcome-text">Please provide the following information to process your credit score request.</p>
+                    </div>
+
+                    <!-- Request Channel Selection -->
+                    <div class="form-section">
+                        <h3 class="section-title">Request Information</h3>
+                        
+                        <div class="field-container">
+                            <label class="field-label required">Request Channel</label>
+                            <select class="field-select" 
+                                    value={formData.requestChannel} 
+                                    onchange={handleChannelChange}
+                                    required>
+                                <template for:each={channelOptions} for:item="option">
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                </template>
+                            </select>
+                            <small class="field-help">Select how you are submitting this request</small>
+                        </div>
+
+                        <div class="field-container">
+                            <label class="field-label">Reason for Request (Optional)</label>
+                            <textarea class="field-textarea" 
+                                      value={formData.reason} 
+                                      onchange={handleReasonChange}
+                                      placeholder="Optional: Why do you need a new credit score calculation?"
+                                      rows="4"></textarea>
+                            <small class="field-help">Help us understand your request better</small>
+                        </div>
+                    </div>
+
+                    <!-- Information Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">What to Expect</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon processing">📊</div>
+                                <div class="info-content">
+                                    <h4>Comprehensive Analysis</h4>
+                                    <p>We'll analyze your current profile information, payment history, and external credit data.</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon timing">⏱️</div>
+                                <div class="info-content">
+                                    <h4>Processing Time</h4>
+                                    <p>Most requests are completed within 24 hours. You'll receive an email when ready.</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon security">🔒</div>
+                                <div class="info-content">
+                                    <h4>Secure & Private</h4>
+                                    <p>Your information is protected with bank-level security and encryption.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="form-section">
+                        <div class="terms-container">
+                            <label class="checkbox-container">
+                                <input type="checkbox" 
+                                       class="terms-checkbox" 
+                                       checked={formData.agreeToTerms} 
+                                       onchange={handleTermsChange}
+                                       required>
+                                <span class="checkmark-custom"></span>
+                                <span class="terms-text">
+                                    I understand that credit score calculations may take up to 24 hours to complete, 
+                                    and I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="button" 
+                                class={submitButtonClass}
+                                onclick={handleSubmit} 
+                                disabled={isSubmitting}>
+                            <template if:false={isSubmitting}>
+                                <svg class="button-icon" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                Submit Credit Score Request
+                            </template>
+                            <template if:true={isSubmitting}>
+                                <div class="loading-spinner"></div>
+                                Processing Request...
+                            </template>
+                        </button>
+                        
+                        <button type="button" 
+                                class="cancel-button" 
+                                onclick={handleBackToDashboard}
+                                disabled={isSubmitting}>
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="additional-info">
+                <div class="info-box">
+                    <h3>💡 Tips for Better Credit Scores</h3>
+                    <ul>
+                        <li>Keep your profile information up to date</li>
+                        <li>Ensure all contact details are current</li>
+                        <li>Maintain consistent payment history</li>
+                        <li>Review your score regularly for improvements</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3>📞 Need Help?</h3>
+                    <p>If you have questions about your credit score or need assistance, please contact our support team.</p>
+                    <a href="/support" class="support-link">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>
