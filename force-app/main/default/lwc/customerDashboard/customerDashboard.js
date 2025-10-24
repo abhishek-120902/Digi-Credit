@@ -1,13 +1,14 @@
-//_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________
-
 import { LightningElement, api, wire, track } from 'lwc';
-import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { NavigationMixin } from 'lightning/navigation';
 import getBillingHistory from '@salesforce/apex/BillingDataIntegrationService.getBillingRecords';
 import getCreditScoreRequests from '@salesforce/apex/CreditScoreCalculationService.getCreditScoreRequests';
 import createCreditScoreRequest from '@salesforce/apex/CreditScoreCalculationService.createCreditScoreRequest';
+
+// Get current user ID
+import USER_ID from '@salesforce/user/Id';
 
 // Account fields
 import ACCOUNT_ID_FIELD from '@salesforce/schema/Account.Id';
@@ -19,11 +20,6 @@ import ACCOUNT_CUSTOM_FIELD from '@salesforce/schema/Account.Custom_Field__c';
 import ACCOUNT_EXTERNAL_ID_FIELD from '@salesforce/schema/Account.External_Customer_ID__c';
 import ACCOUNT_CURRENT_SCORE_FIELD from '@salesforce/schema/Account.Current_Credit_Score__c';
 import ACCOUNT_LAST_CALCULATION_FIELD from '@salesforce/schema/Account.Last_Score_Calculation__c';
-import ACCOUNT_BILLING_STREET_FIELD from '@salesforce/schema/Account.BillingStreet';
-import ACCOUNT_BILLING_CITY_FIELD from '@salesforce/schema/Account.BillingCity';
-import ACCOUNT_BILLING_STATE_FIELD from '@salesforce/schema/Account.BillingState';
-import ACCOUNT_BILLING_POSTAL_CODE_FIELD from '@salesforce/schema/Account.BillingPostalCode';
-import ACCOUNT_BILLING_COUNTRY_FIELD from '@salesforce/schema/Account.BillingCountry';
 
 const ACCOUNT_FIELDS = [
     ACCOUNT_ID_FIELD,
@@ -34,12 +30,13 @@ const ACCOUNT_FIELDS = [
     ACCOUNT_CUSTOM_FIELD,
     ACCOUNT_EXTERNAL_ID_FIELD,
     ACCOUNT_CURRENT_SCORE_FIELD,
-    ACCOUNT_LAST_CALCULATION_FIELD,
-    ACCOUNT_BILLING_STREET_FIELD,
-    ACCOUNT_BILLING_CITY_FIELD,
-    ACCOUNT_BILLING_STATE_FIELD,
-    ACCOUNT_BILLING_POSTAL_CODE_FIELD,
-    ACCOUNT_BILLING_COUNTRY_FIELD
+    ACCOUNT_LAST_CALCULATION_FIELD
+];
+
+const USER_FIELDS = [
+    'User.Id',
+    'User.ContactId',
+    'User.Contact.AccountId'
 ];
 
 export default class CustomerDashboard extends NavigationMixin(LightningElement) {
@@ -47,29 +44,66 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
     @api dashboardTitle = 'My Dashboard';
     
     @track isLoading = false;
-    @track isEditing = false;
-    @track isSaving = false;
     @track isRequestingScore = false;
     @track activeTab = 'overview';
     @track billingHistory = [];
     @track creditScoreRequests = [];
-    @track editableAccount = {};
     @track error;
+    @track userAccountId;
+    
+    wiredUserResult;
+    wiredAccountResult;
+    wiredBillingResult;
+    wiredRequestsResult;
+
+    // Get the current user's Account ID using wire method (requires Permission Set)
+    @wire(getRecord, { recordId: USER_ID, fields: USER_FIELDS })
+    wiredUser(result) {
+        this.wiredUserResult = result;
+        console.log('User wire result:', JSON.stringify(result, null, 2));
+        
+        if (result.data) {
+            console.log('User data fields:', result.data.fields);
+            
+            // Get Account ID from User's Contact
+            if (result.data.fields.ContactId && result.data.fields.ContactId.value) {
+                const contactId = result.data.fields.ContactId.value;
+                console.log('Contact ID found:', contactId);
+                
+                // Try different ways to access the Account ID
+                if (result.data.fields['User.Contact.AccountId']) {
+                    this.userAccountId = result.data.fields['User.Contact.AccountId'].value;
+                    console.log('Account ID from User.Contact.AccountId:', this.userAccountId);
+                } else if (result.data.fields.Contact && result.data.fields.Contact.value) {
+                    console.log('Contact data:', result.data.fields.Contact.value);
+                    if (result.data.fields.Contact.value.fields && 
+                        result.data.fields.Contact.value.fields.AccountId) {
+                        this.userAccountId = result.data.fields.Contact.value.fields.AccountId.value;
+                        console.log('Account ID from nested Contact:', this.userAccountId);
+                    }
+                }
+            } else {
+                console.log('No ContactId found for user');
+            }
+        } else if (result.error) {
+            console.error('Error fetching user data:', result.error);
+            this.showErrorToast('Error', 'Error loading user data. Please ensure you have the required permissions.', 'error');
+            this.isLoading = false;
+        }
+    }
 
     // Wire account data
-    @wire(getRecord, { recordId: '$recordId', fields: ACCOUNT_FIELDS })
+    @wire(getRecord, { recordId: '$effectiveRecordId', fields: ACCOUNT_FIELDS })
     wiredAccount(result) {
         this.wiredAccountResult = result;
-        if (result.data) {
-            this.initializeEditableAccount(result.data);
-        } else if (result.error) {
+        if (result.error) {
             this.error = result.error;
             this.showErrorToast('Error loading account data', result.error.body?.message || result.error.message);
         }
     }
 
     // Wire billing history
-    @wire(getBillingHistory, { accountId: '$recordId' })
+    @wire(getBillingHistory, { accountId: '$effectiveRecordId' })
     wiredBillingHistory(result) {
         this.wiredBillingResult = result;
         if (result.data) {
@@ -86,7 +120,7 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
     }
 
     // Wire credit score requests
-    @wire(getCreditScoreRequests, { accountId: '$recordId' })
+    @wire(getCreditScoreRequests, { accountId: '$effectiveRecordId' })
     wiredCreditScoreRequests(result) {
         this.wiredRequestsResult = result;
         if (result.data) {
@@ -99,6 +133,11 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
         } else if (result.error) {
             this.showErrorToast('Error loading credit score requests', result.error.body?.message || result.error.message);
         }
+    }
+
+    // Use recordId if provided, otherwise use current user's Account ID
+    get effectiveRecordId() {
+        return this.recordId || this.userAccountId;
     }
 
     // Getters for account data
@@ -133,17 +172,6 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
     get lastCalculationDate() {
         const date = getFieldValue(this.account, ACCOUNT_LAST_CALCULATION_FIELD);
         return date ? this.formatDateTime(date) : 'Never calculated';
-    }
-
-    get billingAddress() {
-        const street = getFieldValue(this.account, ACCOUNT_BILLING_STREET_FIELD);
-        const city = getFieldValue(this.account, ACCOUNT_BILLING_CITY_FIELD);
-        const state = getFieldValue(this.account, ACCOUNT_BILLING_STATE_FIELD);
-        const postalCode = getFieldValue(this.account, ACCOUNT_BILLING_POSTAL_CODE_FIELD);
-        const country = getFieldValue(this.account, ACCOUNT_BILLING_COUNTRY_FIELD);
-        
-        const addressParts = [street, city, state, postalCode, country].filter(part => part);
-        return addressParts.length > 0 ? addressParts.join(', ') : 'No address provided';
     }
 
     get profileCompletionPercentage() {
@@ -187,7 +215,6 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
     get tabClasses() {
         return {
             overview: `slds-tabs_default__item ${this.activeTab === 'overview' ? 'slds-is-active' : ''}`,
-            profile: `slds-tabs_default__item ${this.activeTab === 'profile' ? 'slds-is-active' : ''}`,
             billing: `slds-tabs_default__item ${this.activeTab === 'billing' ? 'slds-is-active' : ''}`,
             requests: `slds-tabs_default__item ${this.activeTab === 'requests' ? 'slds-is-active' : ''}`
         };
@@ -195,10 +222,6 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
 
     get isOverviewTab() {
         return this.activeTab === 'overview';
-    }
-
-    get isProfileTab() {
-        return this.activeTab === 'profile';
     }
 
     get isBillingTab() {
@@ -209,71 +232,19 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
         return this.activeTab === 'requests';
     }
 
-    // Initialize editable account data
-    initializeEditableAccount(accountData) {
-        this.editableAccount = {
-            Id: getFieldValue(accountData, ACCOUNT_ID_FIELD),
-            Name: getFieldValue(accountData, ACCOUNT_NAME_FIELD),
-            Phone: getFieldValue(accountData, ACCOUNT_PHONE_FIELD),
-            Email__c: getFieldValue(accountData, ACCOUNT_EMAIL_FIELD),
-            Age__c: getFieldValue(accountData, ACCOUNT_AGE_FIELD),
-            Custom_Field__c: getFieldValue(accountData, ACCOUNT_CUSTOM_FIELD),
-            BillingStreet: getFieldValue(accountData, ACCOUNT_BILLING_STREET_FIELD),
-            BillingCity: getFieldValue(accountData, ACCOUNT_BILLING_CITY_FIELD),
-            BillingState: getFieldValue(accountData, ACCOUNT_BILLING_STATE_FIELD),
-            BillingPostalCode: getFieldValue(accountData, ACCOUNT_BILLING_POSTAL_CODE_FIELD),
-            BillingCountry: getFieldValue(accountData, ACCOUNT_BILLING_COUNTRY_FIELD)
-        };
-    }
 
     // Tab navigation handlers
     handleTabClick(event) {
         this.activeTab = event.target.dataset.tab;
     }
 
-    // Edit mode handlers
-    handleEditProfile() {
-        this.isEditing = true;
-    }
-
-    handleCancelEdit() {
-        this.isEditing = false;
-        this.initializeEditableAccount(this.account);
-    }
-
-    handleInputChange(event) {
-        const field = event.target.dataset.field;
-        const value = event.target.value;
-        this.editableAccount = { ...this.editableAccount, [field]: value };
-    }
-
-    async handleSaveProfile() {
-        this.isSaving = true;
-        try {
-            const recordInput = {
-                fields: this.editableAccount
-            };
-            
-            await updateRecord(recordInput);
-            
-            // Refresh the wired data
-            await refreshApex(this.wiredAccountResult);
-            
-            this.isEditing = false;
-            this.showSuccessToast('Profile Updated', 'Your profile has been successfully updated.');
-        } catch (error) {
-            this.showErrorToast('Update Failed', error.body?.message || error.message);
-        } finally {
-            this.isSaving = false;
-        }
-    }
 
     // Credit score request handler
     async handleRequestCreditScore() {
         this.isRequestingScore = true;
         try {
             await createCreditScoreRequest({ 
-                accountId: this.recordId,
+                accountId: this.effectiveRecordId,
                 requestChannel: 'Community'
             });
             
@@ -422,5 +393,3 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
         }));
     }
 }
-
-//__________________________GenAI: Generated code ends here______________________________

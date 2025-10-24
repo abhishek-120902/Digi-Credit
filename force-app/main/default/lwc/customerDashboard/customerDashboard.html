@@ -1,12 +1,10 @@
-<!--_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________-->
-
 <template>
     <div class="dashboard-container">
         <!-- Dashboard Header -->
         <div class="slds-page-header slds-page-header_record-home">
             <div class="slds-page-header__row">
                 <div class="slds-page-header__col-title">
-                    <div class="slds-media">
+                    <div class="slds-media card-content">
                         <div class="slds-media__figure">
                             <lightning-icon icon-name="standard:account" size="large"></lightning-icon>
                         </div>
@@ -31,6 +29,28 @@
                             variant="neutral" 
                             onclick={handleViewCreditScore}
                             icon-name="utility:trending"
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Update Profile" 
+                            variant="neutral" 
+                            onclick={handleViewFullProfile}
+                            icon-name="utility:user"
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="View Billing" 
+                            variant="neutral" 
+                            data-tab="billing"
+                            onclick={handleTabClick}
+                            icon-name="utility:money"
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Get Support" 
+                            variant="neutral" 
+                            onclick={handleNavigateToSupport}
+                            icon-name="utility:help"
                             class="slds-m-left_x-small">
                         </lightning-button>
                         <lightning-button 
@@ -117,9 +137,6 @@
                 <li class={tabClasses.overview} title="Overview" role="presentation">
                     <a class="slds-tabs_default__link" href="#" role="tab" data-tab="overview" onclick={handleTabClick}>Overview</a>
                 </li>
-                <li class={tabClasses.profile} title="Profile" role="presentation">
-                    <a class="slds-tabs_default__link" href="#" role="tab" data-tab="profile" onclick={handleTabClick}>Profile</a>
-                </li>
                 <li class={tabClasses.billing} title="Billing History" role="presentation">
                     <a class="slds-tabs_default__link" href="#" role="tab" data-tab="billing" onclick={handleTabClick}>Billing History</a>
                 </li>
@@ -131,199 +148,15 @@
             <!-- Overview Tab Content -->
             <template if:true={isOverviewTab}>
                 <div class="slds-tabs_default__content" role="tabpanel">
-                    <div class="slds-grid slds-gutters slds-wrap">
-                        <!-- Credit Score Display -->
-                        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-3">
-                            <c-credit-score-display 
-                                record-id={recordId}
-                                show-history="true"
-                                card-title="My Credit Score">
-                            </c-credit-score-display>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
-                            <lightning-card title="Quick Actions" icon-name="utility:quick_text">
-                                <div class="slds-p-around_medium">
-                                    <div class="slds-grid slds-grid_vertical slds-grid_vertical-stretch">
-                                        <lightning-button 
-                                            label="View My Credit Score" 
-                                            variant="brand" 
-                                            onclick={handleViewCreditScore}
-                                            icon-name="utility:trending"
-                                            class="slds-m-bottom_small">
-                                        </lightning-button>
-                                        <lightning-button 
-                                            label="Update Profile" 
-                                            variant="neutral" 
-                                            onclick={handleViewFullProfile}
-                                            icon-name="utility:user"
-                                            class="slds-m-bottom_small">
-                                        </lightning-button>
-                                        <lightning-button 
-                                            label="Request New Score" 
-                                            variant="neutral" 
-                                            onclick={handleNavigateToRequestScore}
-                                            icon-name="utility:add"
-                                            class="slds-m-bottom_small">
-                                        </lightning-button>
-                                        <lightning-button 
-                                            label="View Billing History" 
-                                            variant="neutral" 
-                                            data-tab="billing"
-                                            onclick={handleTabClick}
-                                            icon-name="utility:money"
-                                            class="slds-m-bottom_small">
-                                        </lightning-button>
-                                        <lightning-button 
-                                            label="Get Support" 
-                                            variant="neutral" 
-                                            onclick={handleNavigateToSupport}
-                                            icon-name="utility:help"
-                                            class="slds-m-bottom_small">
-                                        </lightning-button>
-                                    </div>
-                                </div>
-                            </lightning-card>
-                        </div>
-                    </div>
+                    <!-- Credit Score Display - Full Width -->
+                    <c-credit-score-display 
+                        record-id={recordId}
+                        show-history="true"
+                        card-title="My Credit Score">
+                    </c-credit-score-display>
                 </div>
             </template>
 
-            <!-- Profile Tab Content -->
-            <template if:true={isProfileTab}>
-                <div class="slds-tabs_default__content" role="tabpanel">
-                    <lightning-card title="Personal Information" icon-name="utility:user">
-                        <div class="slds-p-around_medium">
-                            <template if:false={isEditing}>
-                                <!-- View Mode -->
-                                <div class="slds-grid slds-gutters slds-wrap">
-                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <dl class="slds-list_horizontal slds-wrap">
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Name:</dt>
-                                            <dd class="slds-item_detail slds-truncate">{accountName}</dd>
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Phone:</dt>
-                                            <dd class="slds-item_detail slds-truncate">{accountPhone}</dd>
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Email:</dt>
-                                            <dd class="slds-item_detail slds-truncate">{accountEmail}</dd>
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Age:</dt>
-                                            <dd class="slds-item_detail slds-truncate">{accountAge}</dd>
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Customer Type:</dt>
-                                            <dd class="slds-item_detail slds-truncate">{customField}</dd>
-                                        </dl>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <dl class="slds-list_horizontal slds-wrap">
-                                            <dt class="slds-item_label slds-text-color_weak slds-truncate">Address:</dt>
-                                            <dd class="slds-item_detail">{billingAddress}</dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                <div class="slds-m-top_medium">
-                                    <lightning-button label="Edit Profile" variant="brand" onclick={handleEditProfile}></lightning-button>
-                                </div>
-                            </template>
-
-                            <template if:true={isEditing}>
-                                <!-- Edit Mode -->
-                                <div class="slds-grid slds-gutters slds-wrap">
-                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <lightning-input 
-                                            label="Name" 
-                                            value={editableAccount.Name}
-                                            data-field="Name"
-                                            onchange={handleInputChange}
-                                            required>
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Phone" 
-                                            type="tel"
-                                            value={editableAccount.Phone}
-                                            data-field="Phone"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Email" 
-                                            type="email"
-                                            value={editableAccount.Email__c}
-                                            data-field="Email__c"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Age" 
-                                            type="number"
-                                            value={editableAccount.Age__c}
-                                            data-field="Age__c"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Customer Type" 
-                                            value={editableAccount.Custom_Field__c}
-                                            data-field="Custom_Field__c"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <lightning-input 
-                                            label="Street Address" 
-                                            value={editableAccount.BillingStreet}
-                                            data-field="BillingStreet"
-                                            onchange={handleInputChange}>
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="City" 
-                                            value={editableAccount.BillingCity}
-                                            data-field="BillingCity"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="State" 
-                                            value={editableAccount.BillingState}
-                                            data-field="BillingState"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Postal Code" 
-                                            value={editableAccount.BillingPostalCode}
-                                            data-field="BillingPostalCode"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                        <lightning-input 
-                                            label="Country" 
-                                            value={editableAccount.BillingCountry}
-                                            data-field="BillingCountry"
-                                            onchange={handleInputChange}
-                                            class="slds-m-top_small">
-                                        </lightning-input>
-                                    </div>
-                                </div>
-                                <div class="slds-m-top_medium">
-                                    <lightning-button 
-                                        label="Save" 
-                                        variant="brand" 
-                                        onclick={handleSaveProfile}
-                                        disabled={isSaving}
-                                        class="slds-m-right_small">
-                                    </lightning-button>
-                                    <lightning-button 
-                                        label="Cancel" 
-                                        variant="neutral" 
-                                        onclick={handleCancelEdit}
-                                        disabled={isSaving}>
-                                    </lightning-button>
-                                </div>
-                            </template>
-                        </div>
-                    </lightning-card>
-                </div>
-            </template>
 
             <!-- Billing History Tab Content -->
             <template if:true={isBillingTab}>
@@ -466,5 +299,3 @@
         </div>
     </div>
 </template>
-
-<!--__________________________GenAI: Generated code ends here______________________________-->

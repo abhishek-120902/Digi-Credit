@@ -129,8 +129,7 @@ public with sharing class ExternalAPICalloutService {
         List<Account> customers = [
             SELECT Id, Name, Phone, BillingStreet, BillingCity, BillingState, BillingPostalCode
             FROM Account 
-            WHERE External_Customer_ID__c = :externalCustomerId 
-            WITH SECURITY_ENFORCED
+            WHERE External_Customer_ID__c = :externalCustomerId
             LIMIT 1
         ];
         

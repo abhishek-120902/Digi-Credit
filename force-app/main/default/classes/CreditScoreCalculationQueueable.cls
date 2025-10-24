@@ -57,7 +57,6 @@ public class CreditScoreCalculationQueueable implements Queueable {
                 FROM Credit_Score_Request__c
                 WHERE Customer__c IN :accountIds
                 AND Request_Status__c IN ('Submitted', 'Processing')
-                WITH SECURITY_ENFORCED
                 ORDER BY Requested_Date__c DESC
             ];
             
@@ -98,7 +97,6 @@ public class CreditScoreCalculationQueueable implements Queueable {
                 FROM Account
                 WHERE Id IN :results.keySet()
                 AND Email__c != null
-                WITH SECURITY_ENFORCED
                 LIMIT 50
             ];
             

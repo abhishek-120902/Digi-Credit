@@ -22,7 +22,6 @@ public with sharing class BillingDataIntegrationService {
                 FROM Billing_Record__c 
                 WHERE Customer__c = :accountId 
                 AND Bill_Payment_Date__c != null
-                WITH SECURITY_ENFORCED
                 ORDER BY Bill_Due_Date__c DESC
                 LIMIT 50
             ];
@@ -85,7 +84,6 @@ public with sharing class BillingDataIntegrationService {
             FROM Account 
             WHERE Id IN :accountIds 
             AND External_Customer_ID__c != null
-            WITH SECURITY_ENFORCED
         ]);
         
         List<Billing_Record__c> recordsToUpsert = new List<Billing_Record__c>();

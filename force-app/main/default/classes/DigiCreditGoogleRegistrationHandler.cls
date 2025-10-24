@@ -6,14 +6,17 @@ global class DigiCreditGoogleRegistrationHandler implements Auth.RegistrationHan
         System.debug('Creating user with Google data: ' + JSON.serialize(data));
         
         // Check if user already exists
-        List<User> existingUsers = [SELECT Id, IsActive FROM User WHERE Email = :data.email LIMIT 1];
+        List<User> existingUsers = [SELECT Id, IsActive, ContactId FROM User WHERE Email = :data.email LIMIT 1];
         if (!existingUsers.isEmpty() && existingUsers[0].IsActive) {
             System.debug('Existing active user found: ' + existingUsers[0].Id);
             return existingUsers[0];
         }
         
-        // Create Person Account first
+        // Create Person Account first - this is critical for community users
         Account personAccount = createPersonAccount(data);
+        if (personAccount == null || personAccount.PersonContactId == null) {
+            throw new Auth.AuthProviderPluginException('Failed to create Person Account or Contact for user registration');
+        }
         
         // Create new user
         User newUser = new User();
@@ -28,18 +31,19 @@ global class DigiCreditGoogleRegistrationHandler implements Auth.RegistrationHan
         newUser.LanguageLocaleKey = 'en_US';
         newUser.IsActive = true;
         
-        // Set community profile
+        // Set community profile - this is required for portal users
         Id profileId = getDigiCreditProfileId();
-        if (profileId != null) {
-            newUser.ProfileId = profileId;
+        if (profileId == null) {
+            throw new Auth.AuthProviderPluginException('No suitable community profile found for user registration');
         }
+        newUser.ProfileId = profileId;
         
-        // Link to Person Account if created
-        if (personAccount != null) {
-            newUser.ContactId = personAccount.PersonContactId;
-        }
+        // Link to Person Account Contact - this is mandatory for community users
+        newUser.ContactId = personAccount.PersonContactId;
         
-        System.debug('Creating user: ' + JSON.serialize(newUser));
+        System.debug('Creating user with ContactId: ' + newUser.ContactId + ' and ProfileId: ' + newUser.ProfileId);
+        
+        // Note: Permission set assignment will be done after user creation in a separate transaction
         return newUser;
     }
     
@@ -72,28 +76,66 @@ global class DigiCreditGoogleRegistrationHandler implements Auth.RegistrationHan
     
     private Account createPersonAccount(Auth.UserData data) {
         try {
+            // Check if Person Account already exists for this email
+            List<Account> existingAccounts = [SELECT Id, PersonContactId FROM Account 
+                                            WHERE PersonEmail = :data.email 
+                                            AND IsPersonAccount = true LIMIT 1];
+            if (!existingAccounts.isEmpty()) {
+                System.debug('Found existing Person Account: ' + existingAccounts[0].Id);
+                return existingAccounts[0];
+            }
+            
             Account personAccount = new Account();
             personAccount.FirstName = String.isNotBlank(data.firstName) ? data.firstName : extractFirstName(data.fullName);
             personAccount.LastName = String.isNotBlank(data.lastName) ? data.lastName : extractLastName(data.fullName);
             personAccount.PersonEmail = data.email;
+            personAccount.Email__c = data.email;
             
-            // Set Person Account Record Type
-            List<RecordType> personAccountRT = [SELECT Id FROM RecordType WHERE SObjectType = 'Account' AND DeveloperName = 'PersonAccount' LIMIT 1];
+            // Set Person Account Record Type - try multiple approaches
+            List<RecordType> personAccountRT = [SELECT Id FROM RecordType 
+                                              WHERE SObjectType = 'Account' 
+                                              AND (DeveloperName = 'PersonAccount' OR Name = 'Person Account') 
+                                              LIMIT 1];
             if (!personAccountRT.isEmpty()) {
                 personAccount.RecordTypeId = personAccountRT[0].Id;
+                System.debug('Using Person Account Record Type: ' + personAccountRT[0].Id);
+            } else {
+                // If no Person Account record type found, check if Person Accounts are enabled
+                System.debug('No Person Account Record Type found - Person Accounts may not be enabled');
+                throw new Auth.AuthProviderPluginException('Person Accounts are not enabled in this org. Please enable Person Accounts or use a different registration approach.');
             }
             
+            // Add required fields that might be missing
+            if (String.isBlank(personAccount.FirstName)) {
+                personAccount.FirstName = 'Google';
+            }
+            if (String.isBlank(personAccount.LastName)) {
+                personAccount.LastName = 'User';
+            }
+            
+            System.debug('Inserting Person Account: ' + JSON.serialize(personAccount));
             insert personAccount;
             
-            // Retrieve the account with PersonContactId
-            Account insertedAccount = [SELECT Id, PersonContactId FROM Account WHERE Id = :personAccount.Id LIMIT 1];
-            System.debug('Created Person Account: ' + insertedAccount.Id + ' with ContactId: ' + insertedAccount.PersonContactId);
+            // Retrieve the account with PersonContactId - wait for trigger processing
+            Account insertedAccount = [SELECT Id, PersonContactId, Name FROM Account WHERE Id = :personAccount.Id LIMIT 1];
+            
+            if (insertedAccount.PersonContactId == null) {
+                System.debug('PersonContactId is null after insert - this indicates Person Account setup issue');
+                throw new Auth.AuthProviderPluginException('Person Account was created but PersonContactId is null. Please check Person Account configuration.');
+            }
+            
+            System.debug('Successfully created Person Account: ' + insertedAccount.Id + ' with ContactId: ' + insertedAccount.PersonContactId);
             return insertedAccount;
             
-        } catch (Exception e) {
-            System.debug('Error creating Person Account: ' + e.getMessage());
+        } catch (DmlException e) {
+            System.debug('DML Error creating Person Account: ' + e.getMessage());
+            System.debug('DML Error details: ' + e.getDmlMessage(0));
             System.debug('Stack trace: ' + e.getStackTraceString());
-            return null;
+            throw new Auth.AuthProviderPluginException('Failed to create Person Account: ' + e.getDmlMessage(0));
+        } catch (Exception e) {
+            System.debug('General Error creating Person Account: ' + e.getMessage());
+            System.debug('Stack trace: ' + e.getStackTraceString());
+            throw new Auth.AuthProviderPluginException('Failed to create Person Account: ' + e.getMessage());
         }
     }
     

@@ -1,9 +1,11 @@
-//_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________
-
 import { LightningElement, api, track, wire } from 'lwc';
-import { getRecord, updateRecord } from 'lightning/uiRecordApi';
+import { getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
+import { NavigationMixin } from 'lightning/navigation';
+
+// Import Apex methods
+import updateAccountProfile from '@salesforce/apex/CreditScoreCalculationService.updateAccountProfile';
 
 // Account fields to display
 import ACCOUNT_ID from '@salesforce/schema/Account.Id';
@@ -12,10 +14,6 @@ import LAST_NAME from '@salesforce/schema/Account.LastName';
 import PERSON_EMAIL from '@salesforce/schema/Account.PersonEmail';
 import PHONE from '@salesforce/schema/Account.Phone';
 import AGE_FIELD from '@salesforce/schema/Account.Age__c';
-import BILLING_STREET from '@salesforce/schema/Account.BillingStreet';
-import BILLING_CITY from '@salesforce/schema/Account.BillingCity';
-import BILLING_STATE from '@salesforce/schema/Account.BillingState';
-import BILLING_POSTAL_CODE from '@salesforce/schema/Account.BillingPostalCode';
 import CURRENT_CREDIT_SCORE from '@salesforce/schema/Account.Current_Credit_Score__c';
 import LAST_SCORE_CALCULATION from '@salesforce/schema/Account.Last_Score_Calculation__c';
 import EXTERNAL_CUSTOMER_ID from '@salesforce/schema/Account.External_Customer_ID__c';
@@ -30,10 +28,6 @@ const ACCOUNT_FIELDS = [
     PERSON_EMAIL,
     PHONE,
     AGE_FIELD,
-    BILLING_STREET,
-    BILLING_CITY,
-    BILLING_STATE,
-    BILLING_POSTAL_CODE,
     CURRENT_CREDIT_SCORE,
     LAST_SCORE_CALCULATION,
     EXTERNAL_CUSTOMER_ID
@@ -45,7 +39,7 @@ const USER_FIELDS = [
     'User.Contact.AccountId'
 ];
 
-export default class CustomProfileDisplay extends LightningElement {
+export default class CustomProfileDisplay extends NavigationMixin(LightningElement) {
     @api recordId;
     @track isEditing = false;
     @track isLoading = true;
@@ -56,7 +50,7 @@ export default class CustomProfileDisplay extends LightningElement {
     wiredUserResult;
     wiredAccountResult;
 
-    // First, get the current user's Account ID
+    // Get the current user's Account ID using wire method (requires Permission Set)
     @wire(getRecord, { recordId: USER_ID, fields: USER_FIELDS })
     wiredUser(result) {
         this.wiredUserResult = result;
@@ -82,17 +76,12 @@ export default class CustomProfileDisplay extends LightningElement {
                         console.log('Account ID from nested Contact:', this.userAccountId);
                     }
                 }
-                
-                // If still not found, we need to query the Contact record separately
-                if (!this.userAccountId) {
-                    console.log('Account ID not found in user data, will need to query Contact');
-                    this.getAccountIdFromContact(contactId);
-                }
             } else {
                 console.log('No ContactId found for user');
             }
         } else if (result.error) {
             console.error('Error fetching user data:', result.error);
+            this.showToast('Error', 'Error loading user data. Please ensure you have the required permissions.', 'error');
             this.isLoading = false;
         }
     }
@@ -109,10 +98,6 @@ export default class CustomProfileDisplay extends LightningElement {
                 personEmail: result.data.fields.PersonEmail.value,
                 phone: result.data.fields.Phone.value,
                 age: result.data.fields.Age__c.value,
-                billingStreet: result.data.fields.BillingStreet.value,
-                billingCity: result.data.fields.BillingCity.value,
-                billingState: result.data.fields.BillingState.value,
-                billingPostalCode: result.data.fields.BillingPostalCode.value,
                 currentCreditScore: result.data.fields.Current_Credit_Score__c.value,
                 lastScoreCalculation: result.data.fields.Last_Score_Calculation__c.value,
                 externalCustomerId: result.data.fields.External_Customer_ID__c.value
@@ -176,52 +161,112 @@ export default class CustomProfileDisplay extends LightningElement {
         this.isLoading = true;
         
         try {
-            const fields = {};
-            fields[ACCOUNT_ID.fieldApiName] = this.effectiveRecordId;
-            
-            // Only update fields that have changed and are editable
-            if (this.editData.firstName !== this.accountData.firstName) {
-                fields[FIRST_NAME.fieldApiName] = this.editData.firstName;
-            }
-            if (this.editData.lastName !== this.accountData.lastName) {
-                fields[LAST_NAME.fieldApiName] = this.editData.lastName;
-            }
-            if (this.editData.personEmail !== this.accountData.personEmail) {
-                fields[PERSON_EMAIL.fieldApiName] = this.editData.personEmail;
-            }
-            if (this.editData.phone !== this.accountData.phone) {
-                fields[PHONE.fieldApiName] = this.editData.phone;
-            }
-            if (this.editData.age !== this.accountData.age) {
-                fields[AGE_FIELD.fieldApiName] = this.editData.age ? parseInt(this.editData.age) : null;
-            }
-            if (this.editData.billingStreet !== this.accountData.billingStreet) {
-                fields[BILLING_STREET.fieldApiName] = this.editData.billingStreet;
-            }
-            if (this.editData.billingCity !== this.accountData.billingCity) {
-                fields[BILLING_CITY.fieldApiName] = this.editData.billingCity;
-            }
-            if (this.editData.billingState !== this.accountData.billingState) {
-                fields[BILLING_STATE.fieldApiName] = this.editData.billingState;
-            }
-            if (this.editData.billingPostalCode !== this.accountData.billingPostalCode) {
-                fields[BILLING_POSTAL_CODE.fieldApiName] = this.editData.billingPostalCode;
+            // Validate that we have a record ID
+            if (!this.effectiveRecordId) {
+                throw new Error('No record ID available for update');
             }
 
-            const recordInput = { fields };
-            await updateRecord(recordInput);
+            // Prepare profile data for Apex method
+            const profileData = {};
+            let hasChanges = false;
             
-            // Refresh the wired data
+            // Only include fields that have changed
+            if (this.editData.firstName !== this.accountData.firstName) {
+                profileData.firstName = this.editData.firstName;
+                hasChanges = true;
+            }
+            if (this.editData.lastName !== this.accountData.lastName) {
+                profileData.lastName = this.editData.lastName;
+                hasChanges = true;
+            }
+            if (this.editData.personEmail !== this.accountData.personEmail) {
+                profileData.personEmail = this.editData.personEmail;
+                hasChanges = true;
+            }
+            if (this.editData.phone !== this.accountData.phone) {
+                profileData.phone = this.editData.phone;
+                hasChanges = true;
+            }
+            if (this.editData.age !== this.accountData.age) {
+                profileData.age = this.editData.age ? parseInt(this.editData.age) : null;
+                hasChanges = true;
+            }
+
+            // Check if there are any changes to save
+            if (!hasChanges) {
+                this.isEditing = false;
+                this.showToast('Info', 'No changes to save', 'info');
+                return;
+            }
+
+            console.log('Updating profile with data:', JSON.stringify(profileData, null, 2));
+            
+            // Call Apex method to update the account
+            const result = await updateAccountProfile({
+                accountId: this.effectiveRecordId,
+                profileData: profileData
+            });
+            
+            console.log('Update result:', result);
+            
+            // Refresh the wired data to show updated values
             await refreshApex(this.wiredAccountResult);
             
             this.isEditing = false;
-            this.showToast('Success', 'Profile updated successfully!', 'success');
+            this.showToast('Success', result || 'Profile updated successfully!', 'success');
             
         } catch (error) {
-            this.showToast('Error', 'Error updating profile: ' + (error.body?.message || error.message), 'error');
+            console.error('Error updating profile:', error);
+            
+            let errorMessage = 'An error occurred while updating your profile. Please try again.';
+            
+            if (error.body && error.body.message) {
+                errorMessage = error.body.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            this.showToast('Error', errorMessage, 'error');
         } finally {
             this.isLoading = false;
         }
+    }
+
+    // Navigation methods
+    handleNavigateToDashboard() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/home'
+            }
+        });
+    }
+
+    handleNavigateToCreditScore() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/credit-score'
+            }
+        });
+    }
+
+    handleNavigateToRequestScore() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/request-score'
+            }
+        });
+    }
+
+    handleNavigateToSupport() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/support'
+            }
+        });
     }
 
     showToast(title, message, variant) {
@@ -233,5 +278,3 @@ export default class CustomProfileDisplay extends LightningElement {
         this.dispatchEvent(event);
     }
 }
-
-//__________________________GenAI: Generated code ends here______________________________

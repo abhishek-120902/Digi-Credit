@@ -5,10 +5,16 @@ declare module "@salesforce/apex/CreditScoreCalculationService.getCreditScoreReq
   export default function getCreditScoreRequests(param: {accountId: any}): Promise<any>;
 }
 declare module "@salesforce/apex/CreditScoreCalculationService.createCreditScoreRequest" {
-  export default function createCreditScoreRequest(param: {accountId: any, requestChannel: any}): Promise<any>;
+  export default function createCreditScoreRequest(param: {accountId: any, requestChannel: any, processingNotes: any}): Promise<any>;
 }
 declare module "@salesforce/apex/CreditScoreCalculationService.getCreditScoreHistory" {
   export default function getCreditScoreHistory(param: {accountId: any, limitRecords: any}): Promise<any>;
+}
+declare module "@salesforce/apex/CreditScoreCalculationService.getCurrentUserAccount" {
+  export default function getCurrentUserAccount(): Promise<any>;
+}
+declare module "@salesforce/apex/CreditScoreCalculationService.updateAccountProfile" {
+  export default function updateAccountProfile(param: {accountId: any, profileData: any}): Promise<any>;
 }
 declare module "@salesforce/apex/CreditScoreCalculationService.searchCustomers" {
   export default function searchCustomers(param: {searchTerm: any}): Promise<any>;

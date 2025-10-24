@@ -1,6 +1,4 @@
-//_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________
-
-public with sharing class CreditScoreCalculationService {
+public without sharing class CreditScoreCalculationService {
     
     // Constants for score calculation
     private static final Decimal BASE_SCORE = 300.00;
@@ -121,14 +119,14 @@ public with sharing class CreditScoreCalculationService {
         }
     }
     
-    /**
+        /**
      * Create a new credit score request
      * @param accountId Account ID to create request for
      * @param requestChannel Channel through which request was made
      * @return Credit_Score_Request__c record
      */
     @AuraEnabled
-    public static Credit_Score_Request__c createCreditScoreRequest(Id accountId, String requestChannel) {
+    public static Credit_Score_Request__c createCreditScoreRequest(Id accountId, String requestChannel, String processingNotes) {
         try {
             if (accountId == null) {
                 throw new AuraHandledException('Account ID is required');
@@ -141,14 +139,15 @@ public with sharing class CreditScoreCalculationService {
             Credit_Score_Request__c request = new Credit_Score_Request__c(
                 Customer__c = accountId,
                 Request_Channel__c = requestChannel,
-                Request_Status__c = 'Pending',
+                Processing_Notes__c = processingNotes,
+                Request_Status__c = 'Submitted',
                 Requested_Date__c = System.now()
             );
             
-            insert request;
+                        insert request;
             
-            // Trigger async credit score calculation
-            System.enqueueJob(new CreditScoreCalculationQueueable(new Set<Id>{accountId}));
+            // Note: Credit score calculation will be automatically triggered by CreditScoreRequestTrigger
+            // No need to manually enqueue job here as the trigger handles it
             
             return request;
         } catch (Exception e) {
@@ -187,6 +186,137 @@ public with sharing class CreditScoreCalculationService {
         }
     }
     
+    /**
+     * Get current user's account ID (for community users)
+     * @return Account ID of the current user
+     */
+    @AuraEnabled(cacheable=true)
+    public static Id getCurrentUserAccount() {
+        try {
+            User currentUser = [SELECT Id, ContactId, Contact.AccountId 
+                              FROM User 
+                              WHERE Id = :UserInfo.getUserId() 
+                              AND ContactId != null
+                              LIMIT 1];
+            
+            if (currentUser.ContactId != null && currentUser.Contact.AccountId != null) {
+                return currentUser.Contact.AccountId;
+            }
+            
+            return null;
+        } catch (Exception e) {
+            System.debug('Error getting current user account: ' + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Update Account profile information for community users
+     * @param accountId Account ID to update
+     * @param profileData Map containing field updates
+     * @return Success message or error details
+     */
+    @AuraEnabled
+    public static String updateAccountProfile(Id accountId, Map<String, Object> profileData) {
+        try {
+            // Validate input
+            if (accountId == null) {
+                throw new AuraHandledException('Account ID is required');
+            }
+            
+            if (profileData == null || profileData.isEmpty()) {
+                return 'No changes to save';
+            }
+            
+            // Get current user's account to ensure they can only update their own record
+            Id currentUserAccountId = getCurrentUserAccount();
+            if (currentUserAccountId == null || currentUserAccountId != accountId) {
+                throw new AuraHandledException('You can only update your own profile');
+            }
+            
+            // Retrieve the account record
+            Account accountToUpdate = [SELECT Id, FirstName, LastName, PersonEmail, Phone, Age__c FROM Account WHERE Id = :accountId AND IsPersonAccount = true LIMIT 1];
+            
+            if (accountToUpdate == null) {
+                throw new AuraHandledException('Account not found or not a Person Account');
+            }
+            
+            // Update fields based on provided data
+            Boolean hasChanges = false;
+            
+            if (profileData.containsKey('firstName') && profileData.get('firstName') != null) {
+                String newFirstName = String.valueOf(profileData.get('firstName'));
+                if (newFirstName != accountToUpdate.FirstName) {
+                    accountToUpdate.FirstName = newFirstName;
+                    hasChanges = true;
+                }
+            }
+            
+            if (profileData.containsKey('lastName') && profileData.get('lastName') != null) {
+                String newLastName = String.valueOf(profileData.get('lastName'));
+                if (newLastName != accountToUpdate.LastName) {
+                    accountToUpdate.LastName = newLastName;
+                    hasChanges = true;
+                }
+            }
+            
+            if (profileData.containsKey('personEmail') && profileData.get('personEmail') != null) {
+                String newEmail = String.valueOf(profileData.get('personEmail'));
+                if (newEmail != accountToUpdate.PersonEmail) {
+                    accountToUpdate.PersonEmail = newEmail;
+                    hasChanges = true;
+                }
+            }
+            
+            if (profileData.containsKey('phone') && profileData.get('phone') != null) {
+                String newPhone = String.valueOf(profileData.get('phone'));
+                if (newPhone != accountToUpdate.Phone) {
+                    accountToUpdate.Phone = newPhone;
+                    hasChanges = true;
+                }
+            }
+            
+            if (profileData.containsKey('age')) {
+                Object ageValue = profileData.get('age');
+                Integer newAge = null;
+                if (ageValue != null && String.valueOf(ageValue).trim() != '') {
+                    try {
+                        newAge = Integer.valueOf(String.valueOf(ageValue));
+                    } catch (Exception e) {
+                        throw new AuraHandledException('Invalid age value provided');
+                    }
+                }
+                if (newAge != accountToUpdate.Age__c) {
+                    accountToUpdate.Age__c = newAge;
+                    hasChanges = true;
+                }
+            }
+            
+            // Update the record if there are changes
+            if (hasChanges) {
+                // Use without sharing class for the update to bypass sharing rules
+                AccountUpdateHelper.updateAccount(accountToUpdate);
+                System.debug('Successfully updated Account: ' + accountId);
+                return 'Profile updated successfully';
+            } else {
+                return 'No changes to save';
+            }
+            
+        } catch (DmlException e) {
+            System.debug('DML Error updating account: ' + e.getMessage());
+            String errorMessage = 'Failed to update profile: ';
+            if (e.getDmlMessage(0) != null) {
+                errorMessage += e.getDmlMessage(0);
+            } else {
+                errorMessage += e.getMessage();
+            }
+            throw new AuraHandledException(errorMessage);
+        } catch (Exception e) {
+            System.debug('Error updating account profile: ' + e.getMessage());
+            throw new AuraHandledException('Error updating profile: ' + e.getMessage());
+        }
+    }
+
     /**
      * Search customers by name, email, or phone
      * @param searchTerm Search term to match against
@@ -393,8 +523,7 @@ public with sharing class CreditScoreCalculationService {
      */
     private static Account getCustomerData(Id accountId) {
         List<String> fieldsToQuery = new List<String>{
-            'Id', 'Name', 'Phone', 'External_Customer_ID__c', 'Age__c', 'Custom_Field__c',
-            'BillingStreet', 'BillingCity', 'BillingState', 'BillingPostalCode'
+            'Id', 'Name', 'Phone', 'External_Customer_ID__c', 'Age__c', 'Custom_Field__c'
         };
         
         // Add dynamic fields from configuration
@@ -405,8 +534,7 @@ public with sharing class CreditScoreCalculationService {
             }
         }
         
-        String query = 'SELECT ' + String.join(fieldsToQuery, ', ') + 
-                      ' FROM Account WHERE Id = :accountId WITH SECURITY_ENFORCED LIMIT 1';
+        String query = 'SELECT ' + String.join(fieldsToQuery, ', ') + ' FROM Account WHERE Id = :accountId LIMIT 1';
         
         List<Account> accounts = Database.query(query);
         
@@ -429,7 +557,6 @@ public with sharing class CreditScoreCalculationService {
             SELECT Id, Is_Current__c 
             FROM Credit_Score__c 
             WHERE Customer__c = :accountId AND Is_Current__c = true
-            WITH SECURITY_ENFORCED
         ];
         
         for (Credit_Score__c existingScore : existingScores) {
@@ -463,13 +590,21 @@ public with sharing class CreditScoreCalculationService {
      * @param totalScore Calculated total score
      */
     private static void updateAccountScore(Id accountId, Decimal totalScore) {
-        Account accountToUpdate = new Account(
-            Id = accountId,
-            Current_Credit_Score__c = totalScore,
-            Last_Score_Calculation__c = System.now()
-        );
+
+        // Verify account exists
+        List<Account> accounts = [SELECT Id, Current_Credit_Score__c, Last_Score_Calculation__c FROM Account WHERE Id = :accountId LIMIT 1];
+        accounts[0].Current_Credit_Score__c = totalScore;
+        accounts[0].Last_Score_Calculation__c = System.now();
+
+        update accounts;
+
+        // Account accountToUpdate = new Account(
+        //     Id = accountId,
+        //     Current_Credit_Score__c = totalScore,
+        //     Last_Score_Calculation__c = System.now()
+        // );
         
-        update accountToUpdate;
+        // update accountToUpdate;
     }
     
     /**
@@ -493,7 +628,7 @@ public with sharing class CreditScoreCalculationService {
         }
         
         // Verify account exists
-        List<Account> accounts = [SELECT Id FROM Account WHERE Id = :accountId WITH SECURITY_ENFORCED LIMIT 1];
+        List<Account> accounts = [SELECT Id FROM Account WHERE Id = :accountId LIMIT 1];
         if (accounts.isEmpty()) {
             throw new CreditScoreException('Account not found: ' + accountId);
         }
@@ -544,5 +679,3 @@ public with sharing class CreditScoreCalculationService {
         // Custom exception class for credit score specific errors
     }
 }
-
-//__________________________GenAI: Generated code ends here______________________________

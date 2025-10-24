@@ -1,4 +1,35 @@
-/*_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________*/
+/* Gauge Styles */
+.gauge-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.gauge-svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.gauge-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+}
+
+.gauge-range {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
 
 /* Score Circle Styles */
 .score-circle {
@@ -158,6 +189,10 @@
     .breakdown-score {
         font-size: 1.25rem;
     }
+    
+    .gauge-score {
+        font-size: 1.5rem;
+    }
 }
 
 /* Loading state styles */
@@ -207,5 +242,3 @@
         background-color: #fff;
     }
 }
-
-/*__________________________GenAI: Generated code ends here______________________________*/

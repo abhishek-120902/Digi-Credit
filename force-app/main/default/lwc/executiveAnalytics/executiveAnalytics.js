@@ -3,12 +3,13 @@
 import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
+import { NavigationMixin } from 'lightning/navigation';
 import getSystemAnalytics from '@salesforce/apex/CreditScoreCalculationService.getSystemAnalytics';
 import getCreditScoreConfiguration from '@salesforce/apex/CreditScoreConfigurationService.getActiveConfiguration';
 import updateCreditScoreConfiguration from '@salesforce/apex/CreditScoreConfigurationService.updateConfiguration';
 import bulkRecalculateScores from '@salesforce/apex/CreditScoreCalculationService.bulkRecalculateScores';
 
-export default class ExecutiveAnalytics extends LightningElement {
+export default class ExecutiveAnalytics extends NavigationMixin(LightningElement) {
     @api analyticsTitle = 'Executive Analytics';
     
     @track activeTab = 'overview';
@@ -276,6 +277,43 @@ export default class ExecutiveAnalytics extends LightningElement {
         if (score >= 70) return '#ffb75d';
         if (score >= 50) return '#ff9500';
         return '#c23934';
+    }
+
+    // Navigation methods
+    handleNavigateToDashboard() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/home'
+            }
+        });
+    }
+
+    handleNavigateToAgentTools() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/agent-tools'
+            }
+        });
+    }
+
+    handleNavigateToReports() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/reports'
+            }
+        });
+    }
+
+    handleNavigateToSupport() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/support'
+            }
+        });
     }
 
     // Confirmation dialog (simplified - in real implementation, use lightning/confirm)

@@ -1,0 +1,245 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="utility:cases">
+        <div slot="actions">
+            <lightning-button 
+                label="New Case" 
+                variant="brand" 
+                onclick={handleNewCaseClick}
+                icon-name="utility:add"
+                class="slds-m-right_x-small">
+            </lightning-button>
+            <!-- <lightning-button 
+                label="Refresh" 
+                variant="neutral" 
+                onclick={handleRefresh}
+                icon-name="utility:refresh">
+            </lightning-button> -->
+        </div>
+
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading cases..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={error}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:error" size="large" variant="error"></lightning-icon>
+                        <h3 class="slds-text-heading_medium slds-m-top_small">Error Loading Cases</h3>
+                        <p class="slds-text-body_regular slds-m-top_small">
+                            Unable to load your support cases. Please try refreshing the page.
+                        </p>
+                        <!-- <lightning-button 
+                            label="Try Again" 
+                            variant="neutral" 
+                            onclick={handleRefresh}
+                            class="slds-m-top_medium">
+                        </lightning-button> -->
+                    </div>
+                </div>
+            </template>
+
+            <!-- Case History Table -->
+            <template if:true={hasCases}>
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Case Number">Case Number</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Subject">Subject</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Priority">Priority</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Created Date">Created Date</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Description">Description</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Actions">Actions</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={caseHistory} for:item="caseRecord">
+                                <tr key={caseRecord.Id} class="slds-hint-parent">
+                                    <td data-label="Case Number">
+                                        <div class="slds-truncate" title={caseRecord.CaseNumber}>
+                                            <a href="#" data-id={caseRecord.Id} onclick={handleViewCase} class="case-link">
+                                                {caseRecord.CaseNumber}
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td data-label="Subject">
+                                        <div class="slds-truncate" title={caseRecord.Subject}>
+                                            <strong>{caseRecord.Subject}</strong>
+                                        </div>
+                                    </td>
+                                    <td data-label="Status">
+                                        <span class={caseRecord.statusClass}>{caseRecord.Status}</span>
+                                    </td>
+                                    <td data-label="Priority">
+                                        <span class={caseRecord.priorityClass}>
+                                            <lightning-icon 
+                                                icon-name="utility:priority" 
+                                                size="x-small" 
+                                                class="slds-m-right_xx-small">
+                                            </lightning-icon>
+                                            {caseRecord.Priority}
+                                        </span>
+                                    </td>
+                                    <td data-label="Created Date">
+                                        <div class="slds-truncate" title={caseRecord.formattedCreatedDate}>
+                                            {caseRecord.formattedCreatedDate}
+                                        </div>
+                                    </td>
+                                    <td data-label="Description">
+                                        <template if:true={caseRecord.hasDescription}>
+                                            <div class="slds-truncate" title={caseRecord.Description}>
+                                                {caseRecord.truncatedDescription}
+                                            </div>
+                                        </template>
+                                        <template if:false={caseRecord.hasDescription}>
+                                            <span class="slds-text-color_weak">No description</span>
+                                        </template>
+                                    </td>
+                                    <td data-label="Actions">
+                                        <lightning-button 
+                                            label="View" 
+                                            variant="neutral" 
+                                            size="small"
+                                            data-id={caseRecord.Id}
+                                            onclick={handleViewCase}>
+                                        </lightning-button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <template if:false={hasCases}>
+                <template if:false={isLoading}>
+                    <template if:false={error}>
+                        <div class="slds-align_absolute-center slds-p-around_large">
+                            <div class="slds-text-align_center">
+                                <lightning-icon icon-name="utility:cases" size="large" variant="warning"></lightning-icon>
+                                <h3 class="slds-text-heading_medium slds-m-top_small">No Support Cases</h3>
+                                <p class="slds-text-body_regular slds-m-top_small">
+                                    You haven't created any support cases yet. Click "New Case" to get started.
+                                </p>
+                                <lightning-button 
+                                    label="Create Your First Case" 
+                                    variant="brand" 
+                                    onclick={handleNewCaseClick}
+                                    icon-name="utility:add"
+                                    class="slds-m-top_medium">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- New Case Modal -->
+    <template if:true={showNewCaseModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={handleCloseModal}>
+                        <lightning-icon icon-name="utility:close" size="small" alternative-text="close"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">Create New Support Case</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form slds-form_stacked">
+                        <!-- Subject Field -->
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="case-subject">
+                                <abbr class="slds-required" title="required">*</abbr>
+                                Subject
+                            </label>
+                            <div class="slds-form-element__control">
+                                <input 
+                                    type="text" 
+                                    id="case-subject" 
+                                    class="slds-input" 
+                                    placeholder="Brief description of your issue"
+                                    value={newCaseSubject}
+                                    onchange={handleSubjectChange}
+                                    maxlength="255" />
+                            </div>
+                        </div>
+
+                        <!-- Priority Field -->
+                        <div class="slds-form-element slds-m-top_medium">
+                            <label class="slds-form-element__label" for="case-priority">Priority</label>
+                            <div class="slds-form-element__control">
+                                <lightning-combobox
+                                    name="priority"
+                                    label="Priority"
+                                    variant="label-hidden"
+                                    value={newCasePriority}
+                                    placeholder="Select Priority"
+                                    options={priorityOptions}
+                                    onchange={handlePriorityChange}>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="slds-form-element slds-m-top_medium">
+                            <label class="slds-form-element__label" for="case-description">
+                                <abbr class="slds-required" title="required">*</abbr>
+                                Description
+                            </label>
+                            <div class="slds-form-element__control">
+                                <textarea 
+                                    id="case-description" 
+                                    class="slds-textarea" 
+                                    placeholder="Please provide detailed information about your issue..."
+                                    value={newCaseDescription}
+                                    onchange={handleDescriptionChange}
+                                    rows="5">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Cancel" 
+                        variant="neutral" 
+                        onclick={handleCloseModal}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Create Case" 
+                        variant="brand" 
+                        onclick={handleCreateCase}
+                        disabled={isCreatingCase}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

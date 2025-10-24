@@ -1,5 +1,3 @@
-/*_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________*/
-
 /* Dashboard Container */
 .dashboard-container {
     background-color: #f3f3f3;
@@ -9,14 +7,46 @@
 /* Stats Cards */
 .stats-card {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: white !important;
     border: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 140px; /* Fixed height for equal card heights */
+    display: flex;
+    align-items: center;
 }
 
 .stats-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure all text in stats cards is white */
+.stats-card * {
+    color: white !important;
+}
+
+.stats-card .slds-text-color_weak,
+.stats-card .slds-text-color_success {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.stats-card .slds-text-heading_small,
+.stats-card .slds-text-heading_large,
+.stats-card .slds-text-body_regular,
+.stats-card .slds-text-body_small {
+    color: white !important;
+}
+
+/* Make sure media body takes full width for proper alignment */
+.stats-card .slds-media__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-content {
+    width: -webkit-fill-available;
 }
 
 .score-icon {
@@ -331,5 +361,3 @@
         background-color: #333;
     }
 }
-
-/*__________________________GenAI: Generated code ends here______________________________*/

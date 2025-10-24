@@ -1,5 +1,3 @@
-//_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________
-
 import { LightningElement, api, wire, track } from 'lwc';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -135,7 +133,98 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
         const minScore = 300;
         const maxScore = 850;
         const percentage = ((this.totalScore - minScore) / (maxScore - minScore)) * 100;
-        return Math.max(0, Math.min(100, percentage));
+        return Math.max(0, Math.min(100, Math.round(percentage)));
+    }
+
+    // Gauge-specific getters
+    get gaugeColor() {
+        const color = this.scoreColor.toLowerCase();
+        switch (color) {
+            case 'green':
+                return '#28a745'; // Success green
+            case 'yellow':
+                return '#ffc107'; // Warning yellow
+            case 'red':
+                return '#dc3545'; // Danger red
+            default:
+                return '#6c757d'; // Gray
+        }
+    }
+
+    get gaugeDashArray() {
+        // Semi-circle circumference calculation
+        const radius = 80;
+        const circumference = Math.PI * radius; // Half circle
+        return `${circumference} ${circumference}`;
+    }
+
+    get gaugeDashOffset() {
+        // Calculate offset based on percentage
+        const radius = 80;
+        const circumference = Math.PI * radius;
+        const offset = circumference - (this.scorePercentage / 100) * circumference;
+        return offset;
+    }
+
+    get missingFieldsList() {
+        return this.missingFields;
+    }
+
+    get hasScoreHistory() {
+        return this.creditScoreHistory && this.creditScoreHistory.length > 0;
+    }
+
+    get scoreHistory() {
+        if (!this.creditScoreHistory) return [];
+        
+        return this.creditScoreHistory.map((score, index) => {
+            const previousScore = index < this.creditScoreHistory.length - 1 ? 
+                                 this.creditScoreHistory[index + 1] : null;
+            
+            let changeText = '';
+            let changeIcon = '';
+            let changeClass = '';
+            let hasChange = false;
+            
+            if (previousScore && previousScore.Total_Score__c) {
+                const change = score.Total_Score__c - previousScore.Total_Score__c;
+                if (change > 0) {
+                    changeText = `+${change}`;
+                    changeIcon = 'utility:arrowup';
+                    changeClass = 'slds-text-color_success';
+                    hasChange = true;
+                } else if (change < 0) {
+                    changeText = `${change}`;
+                    changeIcon = 'utility:arrowdown';
+                    changeClass = 'slds-text-color_error';
+                    hasChange = true;
+                }
+            }
+            
+            return {
+                ...score,
+                formattedDate: new Date(score.Calculation_Date__c).toLocaleDateString(),
+                statusClass: this.getScoreStatusClass(score.Score_Status__c),
+                changeText,
+                changeIcon,
+                changeClass,
+                hasChange
+            };
+        });
+    }
+
+    getScoreStatusClass(status) {
+        const statusLower = status ? status.toLowerCase() : '';
+        switch (statusLower) {
+            case 'excellent':
+                return 'slds-badge slds-theme_success';
+            case 'good':
+                return 'slds-badge slds-theme_warning';
+            case 'poor':
+                return 'slds-badge slds-theme_error';
+            default:
+                return 'slds-badge';
+        }
     }
 
     get hasMissingFields() {
@@ -144,6 +233,10 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
 
     get showNoScoreMessage() {
         return !this.hasCurrentScore && !this.isLoading;
+    }
+
+    get isRequestingScore() {
+        return this.isRecalculating;
     }
 
     // Handle recalculate button click
@@ -222,6 +315,14 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
         });
     }
 
+    handleUpdateProfile() {
+        this.handleNavigateToProfile();
+    }
+
+    handleRequestScore() {
+        this.handleNavigateToRequestScore();
+    }
+
     // Utility methods for toast messages
     showSuccessToast(title, message) {
         this.dispatchEvent(new ShowToastEvent({
@@ -247,5 +348,3 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
         }));
     }
 }
-
-//__________________________GenAI: Generated code ends here______________________________

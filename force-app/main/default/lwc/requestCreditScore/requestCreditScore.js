@@ -1,9 +1,7 @@
-//_______________This Code was generated using GenAI tool : Codify, Please check for accuracy_______________
-
 import { LightningElement, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { createRecord } from 'lightning/uiRecordApi';
 import { getRecord } from 'lightning/uiRecordApi';
+import { getObjectInfo, getPicklistValues } from 'lightning/uiObjectInfoApi';
 import { NavigationMixin } from 'lightning/navigation';
 
 // Import User ID
@@ -15,10 +13,10 @@ import ACCOUNT_NAME from '@salesforce/schema/Account.Name';
 
 // Import Credit Score Request object and fields
 import CREDIT_SCORE_REQUEST_OBJECT from '@salesforce/schema/Credit_Score_Request__c';
-import CUSTOMER_FIELD from '@salesforce/schema/Credit_Score_Request__c.Customer__c';
 import REQUEST_CHANNEL_FIELD from '@salesforce/schema/Credit_Score_Request__c.Request_Channel__c';
-import REQUEST_STATUS_FIELD from '@salesforce/schema/Credit_Score_Request__c.Request_Status__c';
-import REQUESTED_DATE_FIELD from '@salesforce/schema/Credit_Score_Request__c.Requested_Date__c';
+
+// Import Apex method for creating credit score request
+import createCreditScoreRequest from '@salesforce/apex/CreditScoreCalculationService.createCreditScoreRequest';
 
 export default class RequestCreditScore extends NavigationMixin(LightningElement) {
     @track formData = {
@@ -32,15 +30,39 @@ export default class RequestCreditScore extends NavigationMixin(LightningElement
     @track showSuccessMessage = false;
     @track userAccountId = '';
     @track userName = '';
+    @track channelOptions = [{ label: 'Select Channel', value: '' }];
+    
+    // Object info for getting record type
+    objectInfo;
 
-    // Channel options for the picklist
-    channelOptions = [
-        { label: 'Select Channel', value: '' },
-        { label: 'Web Portal', value: 'Web' },
-        { label: 'Mobile App', value: 'Mobile App' },
-        { label: 'Email Request', value: 'Email' },
-        { label: 'Phone Request', value: 'Phone' }
-    ];
+    // Wire to get object info for Credit Score Request
+    @wire(getObjectInfo, { objectApiName: CREDIT_SCORE_REQUEST_OBJECT })
+    wiredObjectInfo({ error, data }) {
+        if (data) {
+            this.objectInfo = data;
+        } else if (error) {
+            console.error('Error fetching object info:', error);
+        }
+    }
+
+    // Wire to get picklist values for Request Channel field
+    @wire(getPicklistValues, { 
+        recordTypeId: '$objectInfo.defaultRecordTypeId', 
+        fieldApiName: REQUEST_CHANNEL_FIELD 
+    })
+    wiredPicklistValues({ error, data }) {
+        if (data) {
+            this.channelOptions = [
+                { label: 'Select Channel', value: '' },
+                ...data.values.map(option => ({
+                    label: option.label,
+                    value: option.value
+                }))
+            ];
+        } else if (error) {
+            console.error('Error fetching picklist values:', error);
+        }
+    }
 
     // Wire to get current user's account information
     @wire(getRecord, { 
@@ -94,21 +116,14 @@ export default class RequestCreditScore extends NavigationMixin(LightningElement
         this.isSubmitting = true;
 
         try {
-            // Create Credit Score Request record
-            const fields = {};
-            fields[CUSTOMER_FIELD.fieldApiName] = this.userAccountId;
-            fields[REQUEST_CHANNEL_FIELD.fieldApiName] = this.formData.requestChannel;
-            fields[REQUEST_STATUS_FIELD.fieldApiName] = 'Pending';
-            fields[REQUESTED_DATE_FIELD.fieldApiName] = new Date().toISOString();
-
-            const recordInput = {
-                apiName: CREDIT_SCORE_REQUEST_OBJECT.objectApiName,
-                fields
-            };
-
-            const result = await createRecord(recordInput);
+            // Create Credit Score Request record using Apex method
+            const result = await createCreditScoreRequest({
+                accountId: this.userAccountId,
+                requestChannel: this.formData.requestChannel,
+                processingNotes: this.formData.reason
+            });
             
-            if (result.id) {
+            if (result) {
                 this.showSuccessMessage = true;
                 this.resetForm();
                 this.showToast('Success', 'Credit score request submitted successfully! You will receive an email when your score is ready.', 'success');
@@ -139,7 +154,7 @@ export default class RequestCreditScore extends NavigationMixin(LightningElement
         this[NavigationMixin.Navigate]({
             type: 'standard__webPage',
             attributes: {
-                url: '/home'
+                url: '/'
             }
         });
     }
@@ -203,5 +218,3 @@ export default class RequestCreditScore extends NavigationMixin(LightningElement
         return tomorrow.toLocaleDateString();
     }
 }
-
-//__________________________GenAI: Generated code ends here______________________________

@@ -1,0 +1,316 @@
+/* Table Enhancements */
+.slds-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.slds-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.case-link {
+    color: #1589ee;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.case-link:hover {
+    text-decoration: underline;
+    color: #0c5aa6;
+}
+
+/* Priority Styling */
+.priority-critical {
+    color: #c23934;
+    font-weight: bold;
+}
+
+.priority-high {
+    color: #fe9339;
+    font-weight: 600;
+}
+
+.priority-medium {
+    color: #0176d3;
+    font-weight: 500;
+}
+
+.priority-low {
+    color: #706e6b;
+    font-weight: normal;
+}
+
+/* Modal Enhancements */
+.slds-modal__container {
+    max-width: 600px;
+}
+
+.slds-modal__header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.slds-modal__title {
+    color: white;
+}
+
+.slds-button_icon-inverse {
+    color: white;
+}
+
+/* Form Enhancements */
+.slds-form-element__label {
+    font-weight: 600;
+    color: #333;
+}
+
+.slds-input:focus,
+.slds-textarea:focus {
+    border-color: #1589ee;
+    box-shadow: 0 0 0 2px rgba(21, 137, 238, 0.1);
+}
+
+.slds-required {
+    color: #c23934;
+}
+
+/* Button Enhancements */
+.slds-button_brand {
+    background: linear-gradient(135deg, #1589ee 0%, #0c5aa6 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.slds-button_brand:hover {
+    background: linear-gradient(135deg, #0c5aa6 0%, #085394 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(21, 137, 238, 0.3);
+}
+
+.slds-button_neutral {
+    border: 1px solid #d8dde6;
+    transition: all 0.2s ease;
+}
+
+.slds-button_neutral:hover {
+    background-color: #f3f3f3;
+    border-color: #1589ee;
+    color: #1589ee;
+}
+
+/* Card Enhancements */
+.slds-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.slds-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge Enhancements */
+.slds-badge {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+/* Empty State Enhancements */
+.slds-align_absolute-center {
+    padding: 3rem 1rem;
+}
+
+.slds-align_absolute-center .slds-text-heading_medium {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.slds-align_absolute-center .slds-text-body_regular {
+    color: #666;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Loading State */
+.slds-spinner_container {
+    position: relative;
+    min-height: 200px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slds-modal__container {
+        max-width: 95%;
+        margin: 1rem;
+    }
+    
+    .slds-scrollable_x {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .slds-table {
+        min-width: 600px;
+    }
+    
+    .slds-table td {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .slds-modal__container {
+        margin: 0.5rem;
+    }
+    
+    .slds-modal__content {
+        padding: 1rem;
+    }
+    
+    .slds-form-element {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Focus States for Accessibility */
+.slds-button:focus {
+    outline: 2px solid #1589ee;
+    outline-offset: 2px;
+}
+
+.case-link:focus {
+    outline: 2px solid #1589ee;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .slds-modal,
+    .slds-backdrop,
+    .slds-button {
+        display: none !important;
+    }
+    
+    .slds-table {
+        border-collapse: collapse;
+    }
+    
+    .slds-table th,
+    .slds-table td {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+    
+    .slds-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+    .slds-table th {
+        background-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .slds-table tbody tr:hover {
+        background-color: #333;
+    }
+    
+    .case-link {
+        color: #4fc3f7;
+    }
+    
+    .case-link:hover {
+        color: #29b6f6;
+    }
+}
+
+/* Custom Scrollbar for Table */
+.slds-scrollable_x::-webkit-scrollbar {
+    height: 8px;
+}
+
+.slds-scrollable_x::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.slds-scrollable_x::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.slds-scrollable_x::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Tooltip Enhancement */
+[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Status-specific styling */
+.slds-badge.slds-theme_success {
+    background-color: #4bca81;
+}
+
+.slds-badge.slds-theme_warning {
+    background-color: #ffb75d;
+}
+
+.slds-badge.slds-theme_error {
+    background-color: #c23934;
+}
+
+.slds-badge.slds-theme_info {
+    background-color: #1589ee;
+}
