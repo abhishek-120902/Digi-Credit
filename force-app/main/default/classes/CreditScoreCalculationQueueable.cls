@@ -93,10 +93,11 @@ public class CreditScoreCalculationQueueable implements Queueable {
         try {
             // Get accounts that need notifications
             List<Account> accountsForNotification = [
-                SELECT Id, Name, Email__c, Current_Credit_Score__c
+                SELECT Id, Name, PersonEmail, Current_Credit_Score__c
                 FROM Account
                 WHERE Id IN :results.keySet()
-                AND Email__c != null
+                AND PersonEmail != null
+                AND IsPersonAccount = true
                 LIMIT 50
             ];
             

@@ -6,6 +6,9 @@ import { NavigationMixin } from 'lightning/navigation';
 import calculateCreditScore from '@salesforce/apex/CreditScoreCalculationService.calculateCreditScore';
 import getCreditScoreHistory from '@salesforce/apex/CreditScoreCalculationService.getCreditScoreHistory';
 
+// Get current user ID
+import USER_ID from '@salesforce/user/Id';
+
 // Account fields
 import ACCOUNT_NAME_FIELD from '@salesforce/schema/Account.Name';
 import ACCOUNT_CURRENT_SCORE_FIELD from '@salesforce/schema/Account.Current_Credit_Score__c';
@@ -28,30 +31,91 @@ const ACCOUNT_FIELDS = [
     ACCOUNT_LAST_CALCULATION_FIELD
 ];
 
+const USER_FIELDS = [
+    'User.Id',
+    'User.ContactId',
+    'User.Contact.AccountId'
+];
+
 export default class CreditScoreDisplay extends NavigationMixin(LightningElement) {
     @api recordId; // Account ID
     @api showRecalculateButton = false; // For agent use
     @api showHistory = false; // Fixed: Boolean public property must default to false
     @api cardTitle = 'Credit Score';
     
-    @track isLoading = false;
+    @track isLoading = true;
     @track isRecalculating = false;
     @track showHistoryModal = false;
     @track creditScoreHistory = [];
     @track error;
+    @track userAccountId;
+    
+    wiredUserResult;
+
+    baseScore = 0;
+    internalFieldsScore = 0;
+    billingScore = 0;
+    apiScore = 0;
+    missingFields = [];
+
+    get calculationDate() {
+        const date = this.currentCreditScore?.Calculation_Date__c;
+        return date ? new Date(date).toLocaleDateString() : '';
+    }
+
+    // Get the current user's Account ID using wire method
+    @wire(getRecord, { recordId: USER_ID, fields: USER_FIELDS })
+    wiredUser(result) {
+        this.wiredUserResult = result;
+        
+        if (result.data) {
+            // Get Account ID from User's Contact
+            if (result.data.fields.ContactId && result.data.fields.ContactId.value) {
+                const contactId = result.data.fields.ContactId.value;
+                
+                // Try different ways to access the Account ID
+                if (result.data.fields['User.Contact.AccountId']) {
+                    this.userAccountId = result.data.fields['User.Contact.AccountId'].value;
+                } else if (result.data.fields.Contact && result.data.fields.Contact.value) {
+                    if (result.data.fields.Contact.value.fields && 
+                        result.data.fields.Contact.value.fields.AccountId) {
+                        this.userAccountId = result.data.fields.Contact.value.fields.AccountId.value;
+                    }
+                }
+            }
+        } else if (result.error) {
+            console.error('Error fetching user data:', result.error);
+            this.showErrorToast('Error', 'Error loading user data. Please ensure you have the required permissions.');
+            this.isLoading = false;
+        }
+    }
 
     // Wire account data
-    @wire(getRecord, { recordId: '$recordId', fields: ACCOUNT_FIELDS })
+    @wire(getRecord, { recordId: '$effectiveRecordId', fields: ACCOUNT_FIELDS })
     account;
 
     // Wire current credit score
-    @wire(getCreditScoreHistory, { accountId: '$recordId', limitRecords: 1 })
+    @wire(getCreditScoreHistory, { accountId: '$effectiveRecordId', limitRecords: 1 })
     wiredCreditScore(result) {
         this.wiredCreditScoreResult = result;
+        this.isLoading = false;
+        if (result.data) {
+            this.baseScore = result.data[0].Base_Score__c;
+            this.internalFieldsScore = result.data[0].Internal_Fields_Score__c;
+            this.billingScore = result.data[0].External_Billing_Score__c;
+            this.apiScore = result.data[0].API_Score__c;
+            this.missingFields = result.data[0].Missing_Fields__c.split(', ');
+            this.calculationDate = result.data[0].Calculation_Date__c;
+        }
         if (result.error) {
             this.error = result.error;
             this.showErrorToast('Error loading credit score', result.error.body?.message || result.error.message);
         }
+    }
+
+    // Use recordId if provided, otherwise use current user's Account ID
+    get effectiveRecordId() {
+        return this.recordId || this.userAccountId;
     }
 
     get accountName() {
@@ -72,46 +136,66 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
     }
 
     get hasCurrentScore() {
-        return this.currentCreditScore != null;
+        return this.currentScore != null && this.currentScore > 0;
     }
 
     get totalScore() {
-        return this.currentCreditScore?.Total_Score__c || 0;
+        return this.currentScore || 0;
     }
 
     get scoreStatus() {
-        return this.currentCreditScore?.Score_Status__c || 'Unknown';
+        // Determine status based on score ranges
+        const score = this.totalScore;
+        if (score >= 600 && score <= 750) {
+            return 'Excellent';
+        } else if (score >= 450 && score < 600) {
+            return 'Good';
+        } else if (score >= 300 && score < 450) {
+            return 'Poor';
+        } else {
+            return 'Unknown';
+        }
     }
 
     get scoreColor() {
-        return this.currentCreditScore?.Score_Color__c || 'Gray';
+        // Determine color based on score ranges
+        const score = this.totalScore;
+        if (score >= 600 && score <= 750) {
+            return 'Green';
+        } else if (score >= 450 && score < 600) {
+            return 'Yellow';
+        } else if (score >= 300 && score < 450) {
+            return 'Red';
+        } else {
+            return 'Gray';
+        }
     }
 
-    get baseScore() {
-        return this.currentCreditScore?.Base_Score__c || 0;
-    }
+    // get baseScore() {
+    //     return this.currentCreditScore?.Base_Score__c || 0;
+    // }
 
-    get internalFieldsScore() {
-        return this.currentCreditScore?.Internal_Fields_Score__c || 0;
-    }
+    // get internalFieldsScore() {
+    //     return this.currentCreditScore?.Internal_Fields_Score__c || 0;
+    // }
 
-    get billingScore() {
-        return this.currentCreditScore?.External_Billing_Score__c || 0;
-    }
+    // get billingScore() {
+    //     return this.currentCreditScore?.External_Billing_Score__c || 0;
+    // }
 
-    get apiScore() {
-        return this.currentCreditScore?.API_Score__c || 0;
-    }
+    // get apiScore() {
+    //     return this.currentCreditScore?.API_Score__c || 0;
+    // }
 
-    get missingFields() {
-        const fields = this.currentCreditScore?.Missing_Fields__c;
-        return fields ? fields.split(', ') : [];
-    }
+    // get missingFields() {
+    //     const fields = this.currentCreditScore?.Missing_Fields__c;
+    //     return fields ? fields.split(', ') : [];
+    // }
 
-    get calculationDate() {
-        const date = this.currentCreditScore?.Calculation_Date__c;
-        return date ? new Date(date).toLocaleDateString() : '';
-    }
+    // get calculationDate() {
+    //     const date = this.currentCreditScore?.Calculation_Date__c;
+    //     return date ? new Date(date).toLocaleDateString() : '';
+    // }
 
     get scoreColorClass() {
         const color = this.scoreColor.toLowerCase();
@@ -129,9 +213,9 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
     }
 
     get scorePercentage() {
-        // Calculate percentage based on 300-850 range
-        const minScore = 300;
-        const maxScore = 850;
+        // Calculate percentage based on 300-750 range
+        const minScore = 0;
+        const maxScore = 750;
         const percentage = ((this.totalScore - minScore) / (maxScore - minScore)) * 100;
         return Math.max(0, Math.min(100, Math.round(percentage)));
     }
@@ -227,6 +311,20 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
         }
     }
 
+    get scoreRangeText() {
+        // Return the score range based on current status
+        const score = this.totalScore;
+        if (score >= 600 && score <= 750) {
+            return '600-750';
+        } else if (score >= 450 && score < 600) {
+            return '450-600';
+        } else if (score >= 300 && score < 450) {
+            return '300-450';
+        } else {
+            return 'N/A';
+        }
+    }
+
     get hasMissingFields() {
         return this.missingFields.length > 0;
     }
@@ -241,11 +339,11 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
 
     // Handle recalculate button click
     async handleRecalculate() {
-        if (!this.recordId) return;
+        if (!this.effectiveRecordId) return;
 
         this.isRecalculating = true;
         try {
-            await calculateCreditScore({ accountId: this.recordId });
+            await calculateCreditScore({ accountId: this.effectiveRecordId });
             
             // Refresh the wired data
             await refreshApex(this.wiredCreditScoreResult);
@@ -260,18 +358,18 @@ export default class CreditScoreDisplay extends NavigationMixin(LightningElement
     }
 
     // Handle view history button click
-    async handleViewHistory() {
-        this.isLoading = true;
-        try {
-            const result = await getCreditScoreHistory({ accountId: this.recordId, limitRecords: 10 });
-            this.creditScoreHistory = result || [];
-            this.showHistoryModal = true;
-        } catch (error) {
-            this.showErrorToast('Error Loading History', error.body?.message || error.message);
-        } finally {
-            this.isLoading = false;
-        }
-    }
+    // async handleViewHistory() {
+    //     this.isLoading = true;
+    //     try {
+    //         const result = await getCreditScoreHistory({ accountId: this.effectiveRecordId, limitRecords: 10 });
+    //         this.creditScoreHistory = result || [];
+    //         this.showHistoryModal = true;
+    //     } catch (error) {
+    //         this.showErrorToast('Error Loading History', error.body?.message || error.message);
+    //     } finally {
+    //         this.isLoading = false;
+    //     }
+    // }
 
     // Close history modal
     handleCloseHistory() {

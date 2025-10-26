@@ -265,7 +265,8 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
         this[NavigationMixin.Navigate]({
             type: 'comm__namedPage',
             attributes: {
-                name: 'Credit_Score__c'
+                name: 'Credit_Score__c',
+                recordId: this.effectiveRecordId
             }
         });
     }

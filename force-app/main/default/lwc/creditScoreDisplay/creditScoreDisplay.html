@@ -14,36 +14,44 @@
                         <!-- Score Gauge -->
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                             <div class="score-display-card">
-                                <div class="gauge-container">
-                                    <svg class="gauge-svg" viewBox="0 0 200 120" width="200" height="120">
-                                        <!-- Background Arc -->
-                                        <path class="gauge-background" 
-                                              d="M 20 100 A 80 80 0 0 1 180 100" 
-                                              fill="none" 
-                                              stroke="#e5e5e5" 
-                                              stroke-width="12" 
-                                              stroke-linecap="round">
-                                        </path>
-                                        <!-- Progress Arc -->
-                                        <path class="gauge-progress" 
-                                              d="M 20 100 A 80 80 0 0 1 180 100" 
-                                              fill="none" 
-                                              stroke={gaugeColor}
-                                              stroke-width="12" 
-                                              stroke-linecap="round"
-                                              stroke-dasharray={gaugeDashArray}
-                                              stroke-dashoffset={gaugeDashOffset}>
-                                        </path>
-                                    </svg>
-                                    <div class="gauge-content">
-                                        <div class="gauge-score">{scorePercentage}%</div>
-                                        <div class="gauge-range">0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 100</div>
+                                <div class="gauge-wrapper">
+                                    <div class="gauge-container">
+                                        <svg class="gauge-svg" viewBox="0 0 200 120" width="200" height="120">
+                                            <!-- Background Arc -->
+                                            <path class="gauge-background" 
+                                                  d="M 20 100 A 80 80 0 0 1 180 100" 
+                                                  fill="none" 
+                                                  stroke="#e5e5e5" 
+                                                  stroke-width="12" 
+                                                  stroke-linecap="round">
+                                            </path>
+                                            <!-- Progress Arc -->
+                                            <path class="gauge-progress" 
+                                                  d="M 20 100 A 80 80 0 0 1 180 100" 
+                                                  fill="none" 
+                                                  stroke={gaugeColor}
+                                                  stroke-width="12" 
+                                                  stroke-linecap="round"
+                                                  stroke-dasharray={gaugeDashArray}
+                                                  stroke-dashoffset={gaugeDashOffset}>
+                                            </path>
+                                        </svg>
+                                        <div class="gauge-content">
+                                            <div class="gauge-score">{scorePercentage}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="gauge-range">
+                                        <span class="range-min">0</span>
+                                        <span class="range-max">750</span>
                                     </div>
                                 </div>
-                                <div class="score-details slds-m-top_medium slds-text-align_center">
+                                <div class="score-details slds-text-align_center">
                                     <div class="score-status" data-status={scoreStatus}>{scoreStatus}</div>
-                                    <p class="slds-text-body_small slds-text-color_weak">
-                                        Score: {currentScore} | Last calculated: {lastCalculationDate}
+                                    <div class="score-range slds-text-body_small">
+                                        <strong>Range: {scoreRangeText}</strong>
+                                    </div>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                        Score: {totalScore} | Last calculated: {lastCalculationDate}
                                     </p>
                                 </div>
                             </div>
@@ -54,19 +62,19 @@
                             <div class="slds-box slds-box_small">
                                 <h3 class="slds-text-heading_small slds-m-bottom_small">Score Breakdown</h3>
                                 <div class="breakdown-item">
-                                    <span class="breakdown-label">Base Score:</span>
+                                    <span class="breakdown-label">Base Score: </span>
                                     <span class="breakdown-value">{baseScore}</span>
                                 </div>
                                 <div class="breakdown-item">
-                                    <span class="breakdown-label">Profile Completion:</span>
+                                    <span class="breakdown-label">Profile Completion: </span>
                                     <span class="breakdown-value">{internalFieldsScore}</span>
                                 </div>
                                 <div class="breakdown-item">
-                                    <span class="breakdown-label">Payment History:</span>
+                                    <span class="breakdown-label">Payment History: </span>
                                     <span class="breakdown-value">{billingScore}</span>
                                 </div>
                                 <div class="breakdown-item">
-                                    <span class="breakdown-label">Credit Bureau:</span>
+                                    <span class="breakdown-label">Credit Bureau: </span>
                                     <span class="breakdown-value">{apiScore}</span>
                                 </div>
                             </div>
@@ -75,26 +83,30 @@
 
                     <!-- Improvement Suggestions -->
                     <template if:true={hasMissingFields}>
-                        <div class="slds-box slds-box_small slds-m-top_medium improvement-suggestions">
-                            <h3 class="slds-text-heading_small slds-m-bottom_small">
-                                <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
-                                Improve Your Score
-                            </h3>
-                            <p class="slds-text-body_small slds-m-bottom_small">
-                                Complete these profile fields to potentially improve your credit score:
-                            </p>
-                            <ul class="slds-list_dotted">
-                                <template for:each={missingFieldsList} for:item="field">
-                                    <li key={field} class="slds-item">{field}</li>
-                                </template>
-                            </ul>
-                            <lightning-button 
-                                label="Update Profile" 
-                                variant="brand" 
-                                size="small" 
-                                onclick={handleUpdateProfile}
-                                class="slds-m-top_small">
-                            </lightning-button>
+                        <div class="slds-box slds-box_small slds-m-top_medium improvement-suggestions slds-grid">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_11-of-12">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                    <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Improve Your Score
+                                </h3>
+                                <p class="slds-text-body_small slds-m-bottom_small">
+                                    Complete these profile fields to potentially improve your credit score:
+                                </p>
+                                <ul class="slds-list_dotted">
+                                    <template for:each={missingFieldsList} for:item="field">
+                                        <li key={field} class="slds-item">{field}</li>
+                                    </template>
+                                </ul>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+                                <lightning-button 
+                                    label="Update Profile" 
+                                    variant="brand" 
+                                    size="small" 
+                                    onclick={handleUpdateProfile}
+                                    class="slds-m-top_small">
+                                </lightning-button>
+                            </div>
                         </div>
                     </template>
 

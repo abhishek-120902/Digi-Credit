@@ -171,16 +171,36 @@ public without sharing class CreditScoreCalculationService {
             if (limitRecords == null || limitRecords <= 0) {
                 limitRecords = 10;
             }
+
+            System.debug('accountId ===>>> ' + accountId);
+            System.debug('limitRecords ===>>> ' + limitRecords);
+
+            List<Credit_Score__c> creditScores = [SELECT Id, Total_Score__c, Base_Score__c, Internal_Fields_Score__c, External_Billing_Score__c, API_Score__c, Score_Status__c, Calculation_Date__c, Is_Current__c, Missing_Fields__c FROM Credit_Score__c WHERE Customer__c = :accountId ORDER BY Calculation_Date__c DESC LIMIT :limitRecords];
+
+            if(!creditScores.isEmpty())
+            {
+                for(Credit_Score__c cs : creditScores)
+                {
+                    System.debug('cs.Total_Score__c ===>>> ' + cs.Total_Score__c);
+                    System.debug('cs.Base_Score__c ===>>> ' + cs.Base_Score__c);
+                    System.debug('cs.Internal_Fields_Score__c ===>>> ' + cs.Internal_Fields_Score__c);
+                    System.debug('cs.External_Billing_Score__c ===>>> ' + cs.External_Billing_Score__c);
+                    System.debug('cs.API_Score__c ===>>> ' + cs.API_Score__c);
+                    System.debug('cs.Score_Status__c ===>>> ' + cs.Score_Status__c);
+                }
+            }
+
+            return creditScores;
             
-            return [
-                SELECT Id, Total_Score__c, Base_Score__c, Internal_Fields_Score__c,
-                       External_Billing_Score__c, API_Score__c, Score_Status__c,
-                       Calculation_Date__c, Is_Current__c, Missing_Fields__c
-                FROM Credit_Score__c
-                WHERE Customer__c = :accountId
-                ORDER BY Calculation_Date__c DESC
-                LIMIT :limitRecords
-            ];
+            // return [
+            //     SELECT Id, Total_Score__c, Base_Score__c, Internal_Fields_Score__c,
+            //            External_Billing_Score__c, API_Score__c, Score_Status__c,
+            //            Calculation_Date__c, Is_Current__c, Missing_Fields__c
+            //     FROM Credit_Score__c
+            //     WHERE Customer__c = :accountId
+            //     ORDER BY Calculation_Date__c DESC
+            //     LIMIT :limitRecords
+            // ];
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving credit score history: ' + e.getMessage());
         }
