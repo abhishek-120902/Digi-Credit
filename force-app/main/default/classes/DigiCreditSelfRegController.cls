@@ -1,4 +1,4 @@
-public with sharing class DigiCreditSelfRegController {
+global with sharing class DigiCreditSelfRegController implements Auth.ConfigurableSelfRegHandler {
     
     public String firstName { get; set; }
     public String lastName { get; set; }
@@ -41,7 +41,7 @@ public with sharing class DigiCreditSelfRegController {
         
         try {
             // Create Person Account first
-            Account personAccount = createPersonAccount();
+            Account personAccount = createPersonAccount(firstName, lastName, email);
             if (personAccount == null || personAccount.PersonContactId == null) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
                     'Failed to create account. Please contact support.'));
@@ -178,7 +178,7 @@ public with sharing class DigiCreditSelfRegController {
         }
     }
     
-    private Account createPersonAccount() {
+    private Account createPersonAccount(String firstName, String lastName, String email) {
         try {
             // Check if Person Account already exists
             List<Account> existingAccounts = [SELECT Id, PersonContactId FROM Account 
@@ -192,6 +192,7 @@ public with sharing class DigiCreditSelfRegController {
             personAccount.FirstName = firstName;
             personAccount.LastName = lastName;
             personAccount.PersonEmail = email;
+            personAccount.Email__c = email;
             
             // Enhanced Person Account Record Type assignment with multiple fallback strategies
             Id personAccountRecordTypeId = getPersonAccountRecordTypeId();
@@ -204,18 +205,19 @@ public with sharing class DigiCreditSelfRegController {
                 if (defaultRecordTypeId != null) {
                     personAccount.RecordTypeId = defaultRecordTypeId;
                     System.debug('Using default Account Record Type ID: ' + defaultRecordTypeId);
-                } else {
-                    // Last resort: Try hardcoded ID but validate it first
-                    String hardcodedPersonAccountRTId = '012gL000002YGTQA2';
-                    List<RecordType> validateRT = [SELECT Id FROM RecordType WHERE Id = :hardcodedPersonAccountRTId AND IsActive = true LIMIT 1];
-                    if (!validateRT.isEmpty()) {
-                        personAccount.RecordTypeId = hardcodedPersonAccountRTId;
-                        System.debug('Using validated hardcoded Person Account Record Type ID: ' + hardcodedPersonAccountRTId);
-                    } else {
-                        // Don't set RecordTypeId - let Salesforce use org default
-                        System.debug('No valid record type found. Letting Salesforce use org default.');
-                    }
                 }
+                // else {
+                //     // Last resort: Try hardcoded ID but validate it first
+                //     String hardcodedPersonAccountRTId = '012gL000002YGTQA2';
+                //     List<RecordType> validateRT = [SELECT Id FROM RecordType WHERE Id = :hardcodedPersonAccountRTId AND IsActive = true LIMIT 1];
+                //     if (!validateRT.isEmpty()) {
+                //         personAccount.RecordTypeId = hardcodedPersonAccountRTId;
+                //         System.debug('Using validated hardcoded Person Account Record Type ID: ' + hardcodedPersonAccountRTId);
+                //     } else {
+                //         // Don't set RecordTypeId - let Salesforce use org default
+                //         System.debug('No valid record type found. Letting Salesforce use org default.');
+                //     }
+                // }
             }
             
             insert personAccount;
@@ -231,13 +233,11 @@ public with sharing class DigiCreditSelfRegController {
             
             // Provide specific error message for record type issues
             if (ex.getMessage().contains('record type') || ex.getMessage().contains('RecordType') || ex instanceof CustomException) {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
-                    'Person Account configuration error: ' + ex.getMessage()));
+                throw new CustomException('Person Account configuration error: ' + ex.getMessage());
             } else {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
-                    'Failed to create account. Error: ' + ex.getMessage()));
+                throw new CustomException('Failed to create account. Error: ' + ex.getMessage());
             }
-            return null;
+            // return null;
         }
     }
     
@@ -461,6 +461,210 @@ public with sharing class DigiCreditSelfRegController {
         PageReference loginPage = new PageReference(loginUrl);
         loginPage.setRedirect(true);
         return loginPage;
+    }
+    
+    // Auth.ConfigurableSelfRegHandler interface methods
+    
+    /**
+     * Creates a user with the given information
+     * Required by Auth.ConfigurableSelfRegHandler interface
+     */
+    global Id createUser(Id accountId, Id profileId, Map<Schema.SObjectField, String> registrationAttributes, String password) {
+        try {
+            // Convert SObjectField map to String map for easier processing
+            Map<String, String> stringAttributes = new Map<String, String>();
+            for (Schema.SObjectField field : registrationAttributes.keySet()) {
+                stringAttributes.put(field.getDescribe().getName().toLowerCase(), registrationAttributes.get(field));
+            }
+            
+            // Extract user information from registration attributes
+            String userFirstName = stringAttributes.get('firstname');
+            String userLastName = stringAttributes.get('lastname');
+            String userEmail = stringAttributes.get('email');
+            String userCommunityNickname = stringAttributes.get('communitynickname');
+            
+            // Use provided values or fall back to class properties
+            if (String.isBlank(userFirstName)) userFirstName = this.firstName;
+            if (String.isBlank(userLastName)) userLastName = this.lastName;
+            if (String.isBlank(userEmail)) userEmail = this.email;
+            if (String.isBlank(userCommunityNickname)) userCommunityNickname = this.communityNickname;
+            
+            User newUser = new User();
+            newUser.FirstName = userFirstName;
+            newUser.LastName = userLastName;
+            newUser.Email = userEmail;
+            newUser.Username = generateUniqueUsername(userEmail);
+            newUser.Alias = generateAlias(userFirstName, userLastName);
+            newUser.CommunityNickname = generateUniqueCommunityNickname(userCommunityNickname);
+            newUser.TimeZoneSidKey = 'America/New_York';
+            newUser.LocaleSidKey = 'en_US';
+            newUser.EmailEncodingKey = 'UTF-8';
+            newUser.LanguageLocaleKey = 'en_US';
+            newUser.IsActive = true;
+            
+            // Use provided profileId or fall back to default
+            if (profileId != null) {
+                newUser.ProfileId = profileId;
+            } else {
+                Id defaultProfileId = getDigiCreditProfileId();
+                if (defaultProfileId != null) {
+                    newUser.ProfileId = defaultProfileId;
+                }
+            }
+            
+            // Set ContactId if accountId is provided (for Person Accounts)
+            if (accountId != null) {
+
+                Account personAcc = createPersonAccount(userFirstName, userLastName, userEmail);
+                System.debug('accountId ===>>> ' + personAcc.Id);
+                // For Person Accounts, we need to get the PersonContactId
+                try {
+                    Account personAccount = [SELECT PersonContactId FROM Account WHERE Id = :personAcc.Id AND IsPersonAccount = true LIMIT 1];
+                    if (personAccount != null && personAccount.PersonContactId != null) {
+                        newUser.ContactId = personAccount.PersonContactId;
+                    }
+                } catch (Exception ex) {
+                    System.debug('Error retrieving PersonContactId: ' + ex.getMessage());
+                }
+            }
+            
+            // Insert the user and return the ID
+            insert newUser;
+            return newUser.Id;
+            
+        } catch (Exception ex) {
+            System.debug('Error creating user in createUser method: ' + ex.getMessage());
+            System.debug('Exception Type: ' + ex.getTypeName());
+            System.debug('Stack Trace: ' + ex.getStackTraceString());
+            
+            // Throw exception for interface compliance
+            throw new CustomException('Failed to create user: ' + ex.getMessage());
+        }
+    }
+    
+    /**
+     * Validates the registration data
+     * Required by Auth.ConfigurableSelfRegHandler interface
+     */
+    global void validateRegistration(Map<Schema.SObjectField, String> registrationAttributes) {
+        // Convert SObjectField map to String map for easier processing
+        Map<String, String> stringAttributes = new Map<String, String>();
+        for (Schema.SObjectField field : registrationAttributes.keySet()) {
+            stringAttributes.put(field.getDescribe().getName().toLowerCase(), registrationAttributes.get(field));
+        }
+        
+        String userFirstName = stringAttributes.get('firstname');
+        String userLastName = stringAttributes.get('lastname');
+        String userEmail = stringAttributes.get('email');
+        String userPassword = stringAttributes.get('password');
+        String userConfirmPassword = stringAttributes.get('confirmpassword');
+        
+        // Use provided values or fall back to class properties
+        if (String.isBlank(userFirstName)) userFirstName = this.firstName;
+        if (String.isBlank(userLastName)) userLastName = this.lastName;
+        if (String.isBlank(userEmail)) userEmail = this.email;
+        if (String.isBlank(userPassword)) userPassword = this.password;
+        if (String.isBlank(userConfirmPassword)) userConfirmPassword = this.confirmPassword;
+        
+        // Validate required fields
+        if (String.isBlank(userFirstName)) {
+            throw new CustomException('First Name is required.');
+        }
+        
+        if (String.isBlank(userLastName)) {
+            throw new CustomException('Last Name is required.');
+        }
+        
+        if (String.isBlank(userEmail)) {
+            throw new CustomException('Email is required.');
+        } else if (!isValidEmail(userEmail)) {
+            throw new CustomException('Please enter a valid email address.');
+        }
+        
+        if (String.isBlank(userPassword)) {
+            throw new CustomException('Password is required.');
+        } else if (userPassword.length() < 8) {
+            throw new CustomException('Password must be at least 8 characters long.');
+        }
+        
+        if (String.isBlank(userConfirmPassword)) {
+            throw new CustomException('Confirm Password is required.');
+        } else if (userPassword != userConfirmPassword) {
+            throw new CustomException('Passwords do not match.');
+        }
+        
+        // Check if user already exists
+        List<User> existingUsers = [SELECT Id FROM User WHERE Email = :userEmail LIMIT 1];
+        if (!existingUsers.isEmpty()) {
+            throw new CustomException('A user with this email address already exists.');
+        }
+    }
+    
+    /**
+     * Creates an account for the user during registration
+     * Required by Auth.ConfigurableSelfRegHandler interface
+     */
+    global Id createAccount(Map<Schema.SObjectField, String> registrationAttributes) {
+        try {
+            // Convert SObjectField map to String map for easier processing
+            Map<String, String> stringAttributes = new Map<String, String>();
+            for (Schema.SObjectField field : registrationAttributes.keySet()) {
+                stringAttributes.put(field.getDescribe().getName().toLowerCase(), registrationAttributes.get(field));
+            }
+            
+            // Extract user information from registration attributes
+            String userFirstName = stringAttributes.get('firstname');
+            String userLastName = stringAttributes.get('lastname');
+            String userEmail = stringAttributes.get('email');
+            
+            // Use provided values or fall back to class properties
+            if (String.isBlank(userFirstName)) userFirstName = this.firstName;
+            if (String.isBlank(userLastName)) userLastName = this.lastName;
+            if (String.isBlank(userEmail)) userEmail = this.email;
+            
+            // Check if Person Account already exists
+            List<Account> existingAccounts = [SELECT Id, PersonContactId FROM Account 
+                                            WHERE PersonEmail = :userEmail 
+                                            AND IsPersonAccount = true LIMIT 1];
+            if (!existingAccounts.isEmpty()) {
+                return existingAccounts[0].Id;
+            }
+            
+            Account personAccount = new Account();
+            personAccount.FirstName = userFirstName;
+            personAccount.LastName = userLastName;
+            personAccount.PersonEmail = userEmail;
+            
+            // Enhanced Person Account Record Type assignment with multiple fallback strategies
+            Id personAccountRecordTypeId = getPersonAccountRecordTypeId();
+            if (personAccountRecordTypeId != null) {
+                personAccount.RecordTypeId = personAccountRecordTypeId;
+                System.debug('Setting Person Account Record Type ID: ' + personAccountRecordTypeId);
+            } else {
+                // Try the default Account record type as fallback
+                Id defaultRecordTypeId = getDefaultAccountRecordType();
+                if (defaultRecordTypeId != null) {
+                    personAccount.RecordTypeId = defaultRecordTypeId;
+                    System.debug('Using default Account Record Type ID: ' + defaultRecordTypeId);
+                } else {
+                    // Don't set RecordTypeId - let Salesforce use org default
+                    System.debug('No valid record type found. Letting Salesforce use org default.');
+                }
+            }
+            
+            insert personAccount;
+            
+            // Return the account ID
+            return personAccount.Id;
+            
+        } catch (Exception ex) {
+            System.debug('Error creating Person Account in createAccount method: ' + ex.getMessage());
+            System.debug('Exception Type: ' + ex.getTypeName());
+            System.debug('Stack Trace: ' + ex.getStackTraceString());
+            
+            // Throw exception for interface compliance
+            throw new CustomException('Failed to create account: ' + ex.getMessage());
+        }
     }
     
     /**

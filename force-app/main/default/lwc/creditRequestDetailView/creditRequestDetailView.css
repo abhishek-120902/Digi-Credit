@@ -1,0 +1,531 @@
+/* Container Styles */
+.credit-request-container {
+    padding: 1rem;
+    background-color: #f3f3f3;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.credit-icon {
+    color: #0176d3;
+}
+
+.status-priority-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Field Group Styles */
+.field-group {
+    margin-bottom: 0.75rem;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #3e3e3c;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #181818;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.request-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0176d3;
+}
+
+/* Priority Styling */
+.priority-high {
+    background-color: #c23934;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-medium {
+    background-color: #fe9339;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-low {
+    background-color: #4bca81;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-normal {
+    background-color: #706e6b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Channel Styling */
+.channel-web {
+    background-color: #0176d3;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.channel-email {
+    background-color: #fe9339;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.channel-phone {
+    background-color: #4bca81;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.channel-mobile {
+    background-color: #8b5cf6;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.channel-default {
+    background-color: #706e6b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Credit Score Display */
+.credit-score-display {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Gauge Styles */
+.gauge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.gauge-container {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.gauge-svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.gauge-content {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+}
+
+.gauge-range {
+    display: flex;
+    justify-content: space-between;
+    width: 160px;
+    margin: 0 auto;
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.range-min {
+    text-align: left;
+}
+
+.range-max {
+    text-align: right;
+}
+
+/* Score Status Styles */
+.score-status {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.status-poor {
+    background-color: #c23934;
+    color: white;
+}
+
+.status-good {
+    background-color: #ffb75d;
+    color: #333;
+}
+
+.status-excellent {
+    background-color: #4bca81;
+    color: white;
+}
+
+.status-unknown {
+    background-color: #747474;
+    color: white;
+}
+
+.score-status-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Credit Score Classes */
+.score-excellent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4bca81, #2e844a);
+    color: white;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(75, 202, 129, 0.3);
+}
+
+.score-good {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0176d3, #014486);
+    color: white;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(1, 118, 211, 0.3);
+}
+
+.score-fair {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fe9339, #d1770a);
+    color: white;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(254, 147, 57, 0.3);
+}
+
+.score-poor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c23934, #8e2826);
+    color: white;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(194, 57, 52, 0.3);
+}
+
+.score-unknown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #706e6b, #514f4d);
+    color: white;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(112, 110, 107, 0.3);
+}
+
+.score-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Score Range Bar */
+.score-range {
+    width: 100%;
+}
+
+.range-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.range-segment {
+    flex: 1;
+}
+
+.range-segment.poor {
+    background-color: #c23934;
+}
+
+.range-segment.fair {
+    background-color: #fe9339;
+}
+
+.range-segment.good {
+    background-color: #0176d3;
+}
+
+.range-segment.excellent {
+    background-color: #4bca81;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #706e6b;
+    font-weight: 600;
+}
+
+/* Comments Section */
+.comments-text {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border-left: 4px solid #0176d3;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* Customer Link */
+.customer-link {
+    text-decoration: none;
+    color: #0176d3;
+    font-weight: 600;
+}
+
+.customer-link:hover {
+    text-decoration: underline;
+}
+
+/* Progress Timeline */
+.progress-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.timeline-step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.timeline-step.completed {
+    background-color: #f0f9ff;
+    border-left: 4px solid #4bca81;
+}
+
+.timeline-step.processing {
+    background-color: #fff7ed;
+    border-left: 4px solid #fe9339;
+}
+
+.timeline-step.completion {
+    background-color: #f8f9fa;
+    border-left: 4px solid #706e6b;
+}
+
+.step-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.timeline-step.completed .step-icon {
+    background-color: #4bca81;
+    color: white;
+}
+
+.timeline-step.processing .step-icon {
+    background-color: #fe9339;
+    color: white;
+}
+
+.timeline-step.completion .step-icon {
+    background-color: #706e6b;
+    color: white;
+}
+
+.step-label {
+    font-weight: 600;
+    color: #3e3e3c;
+}
+
+/* Card Enhancements */
+.slds-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.slds-card__header {
+    background-color: #fafbfc;
+    border-bottom: 1px solid #e5e5e5;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding-bottom: 0.75rem;
+}
+
+.slds-card__header-title {
+    font-weight: 600;
+    color: #3e3e3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .credit-request-container {
+        padding: 0.5rem;
+    }
+    
+    .score-excellent,
+    .score-good,
+    .score-fair,
+    .score-poor,
+    .score-unknown {
+        width: 120px;
+        height: 120px;
+        padding: 1rem;
+    }
+    
+    .score-number {
+        font-size: 2rem;
+    }
+    
+    .gauge-score {
+        font-size: 1.5rem;
+    }
+    
+    .status-priority-container {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+    }
+}
+
+/* Loading and Error States */
+.slds-spinner_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+}
+
+/* Hover Effects */
+.slds-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* Focus States */
+.customer-link:focus {
+    outline: 2px solid #0176d3;
+    outline-offset: 2px;
+}
+
+/* Animation for Score Display */
+@keyframes scoreAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.credit-score-display {
+    animation: scoreAppear 0.5s ease-out;
+}

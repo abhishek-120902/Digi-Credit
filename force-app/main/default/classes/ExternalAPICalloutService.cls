@@ -2,7 +2,7 @@
 
 public with sharing class ExternalAPICalloutService {
     
-    private static final String CREDIT_BUREAU_ENDPOINT = 'callout:Credit_Bureau_API';
+    private static final String CREDIT_BUREAU_ENDPOINT = 'callout:Postman_Mock_API';
     private static final Integer TIMEOUT_SECONDS = 30;
     private static final Integer MAX_RETRIES = 3;
     private static final Integer BASE_DELAY_MS = 1000;

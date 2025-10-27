@@ -1,0 +1,422 @@
+/* Account Related List Component Styles */
+
+/* Main Container */
+.slds-card {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid #d8dde6;
+}
+
+.slds-card__header {
+    background-color: #fafaf9;
+    border-bottom: 1px solid #d8dde6;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.slds-card__header-title {
+    font-weight: 600;
+    color: #181818;
+    display: flex;
+    align-items: center;
+}
+
+/* Related List Cards */
+.related-list-card {
+    min-height: 300px;
+    margin-bottom: 1rem;
+}
+
+.related-list-card .slds-card__header {
+    background-color: #f4f6f9;
+    border-bottom: 1px solid #d8dde6;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+}
+
+.related-list-card .slds-card__header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #181818;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+/* Table Styles */
+.related-list-table {
+    font-size: 0.875rem;
+}
+
+.related-list-table th {
+    font-weight: 600;
+    color: #181818;
+    background-color: #f4f6f9;
+    padding: 0.5rem;
+    border: 1px solid #d8dde6;
+}
+
+.related-list-table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+    border: 1px solid #d8dde6;
+}
+
+.related-list-table .slds-truncate {
+    max-width: 150px;
+}
+
+/* Clickable Rows */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: #f3f3f3;
+}
+
+/* Empty State */
+.related-list-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Status Badges */
+.slds-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Case Status Classes */
+.slds-badge_lightest {
+    background-color: #f3f3f3;
+    color: #181818;
+}
+
+.slds-theme_warning {
+    background-color: #fef7e0;
+    color: #b45000;
+}
+
+.slds-theme_error {
+    background-color: #feded8;
+    color: #ba0517;
+}
+
+.slds-theme_success {
+    background-color: #d9f7e8;
+    color: #027e46;
+}
+
+.slds-badge_success {
+    background-color: #d9f7e8;
+    color: #027e46;
+}
+
+.slds-badge_error {
+    background-color: #feded8;
+    color: #ba0517;
+}
+
+/* Credit Score Status Classes */
+.score-excellent {
+    color: #04844b;
+    font-weight: 600;
+}
+
+.score-good {
+    color: #fe9339;
+    font-weight: 600;
+}
+
+.score-poor {
+    color: #c23934;
+    font-weight: 600;
+}
+
+.score-unknown {
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Score Value Styling */
+.score-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+/* Score Change Indicators */
+.score-change-positive {
+    color: #04844b;
+    font-weight: 600;
+}
+
+.score-change-positive::before {
+    content: "↗ ";
+    font-size: 0.75rem;
+}
+
+.score-change-negative {
+    color: #c23934;
+    font-weight: 600;
+}
+
+.score-change-negative::before {
+    content: "↘ ";
+    font-size: 0.75rem;
+}
+
+/* Link Buttons */
+.case-link,
+.billing-link {
+    color: #0176d3;
+    text-decoration: none;
+    font-weight: 400;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.case-link:hover,
+.billing-link:hover {
+    color: #014486;
+    text-decoration: underline;
+}
+
+/* Grid Layout */
+.slds-grid.slds-wrap.slds-gutters {
+    margin: -0.5rem;
+}
+
+.slds-col {
+    padding: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slds-col {
+        padding: 0.25rem;
+    }
+    
+    .related-list-card {
+        min-height: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .related-list-table {
+        font-size: 0.75rem;
+    }
+    
+    .related-list-table th,
+    .related-list-table td {
+        padding: 0.25rem;
+    }
+    
+    .related-list-table .slds-truncate {
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slds-card__header .slds-grid {
+        display: block;
+    }
+    
+    .slds-card__header .slds-no-flex {
+        margin-top: 0.5rem;
+        text-align: right;
+    }
+    
+    .related-list-card .slds-card__header {
+        padding: 0.5rem;
+    }
+    
+    .related-list-table th:nth-child(n+3),
+    .related-list-table td:nth-child(n+3) {
+        display: none;
+    }
+}
+
+/* Loading States */
+.slds-spinner_container {
+    position: relative;
+    min-height: 100px;
+}
+
+/* Header Icons */
+.slds-card__header-title lightning-icon {
+    margin-right: 0.5rem;
+}
+
+.related-list-card .slds-card__header h3 lightning-icon {
+    margin-right: 0.5rem;
+}
+
+/* Button Styling */
+.slds-button {
+    transition: all 0.2s ease;
+}
+
+.slds-button:hover {
+    transform: translateY(-1px);
+}
+
+/* Focus States */
+.slds-button:focus,
+.slds-button:focus-visible {
+    box-shadow: 0 0 3px #0176d3;
+    outline: none;
+}
+
+.clickable-row:focus {
+    outline: 2px solid #0176d3;
+    outline-offset: -2px;
+}
+
+/* Accessibility */
+.slds-assistive-text {
+    position: absolute !important;
+    margin: -1px !important;
+    border: 0 !important;
+    padding: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+}
+
+/* Print Styles */
+@media print {
+    .slds-card {
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+    
+    .slds-button {
+        display: none;
+    }
+    
+    .clickable-row {
+        cursor: default;
+    }
+    
+    .clickable-row:hover {
+        background-color: transparent;
+    }
+    
+    .related-list-card {
+        page-break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .slds-card {
+        border: 2px solid #000;
+    }
+    
+    .slds-card__header {
+        background-color: #fff;
+        border-bottom: 2px solid #000;
+    }
+    
+    .related-list-table th,
+    .related-list-table td {
+        border: 1px solid #000;
+    }
+    
+    .clickable-row:hover {
+        background-color: #000;
+        color: #fff;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .slds-card {
+        background-color: #1a1a1a;
+        border-color: #444;
+        color: #fff;
+    }
+    
+    .slds-card__header {
+        background-color: #2a2a2a;
+        border-bottom-color: #444;
+    }
+    
+    .related-list-table th {
+        background-color: #2a2a2a;
+        color: #fff;
+    }
+    
+    .clickable-row:hover {
+        background-color: #333;
+    }
+    
+    .related-list-empty {
+        color: #ccc;
+    }
+}
+
+/* Animation for Refresh */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.slds-button[data-refreshing="true"] lightning-icon {
+    animation: spin 1s linear infinite;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-weight-bold {
+    font-weight: 600;
+}
+
+.font-weight-normal {
+    font-weight: 400;
+}
+
+/* Component Specific Overrides */
+.account-related-list .slds-card__body {
+    padding: 0;
+}
+
+.account-related-list .related-list-card .slds-card__body {
+    padding: 0;
+}
+
+/* Ensure proper spacing in nested cards */
+.account-related-list .slds-grid > .slds-col > .slds-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.account-related-list .slds-grid > .slds-col > .slds-card .slds-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}

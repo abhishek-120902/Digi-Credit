@@ -7,8 +7,13 @@ import getBillingHistory from '@salesforce/apex/BillingDataIntegrationService.ge
 import getCreditScoreRequests from '@salesforce/apex/CreditScoreCalculationService.getCreditScoreRequests';
 import createCreditScoreRequest from '@salesforce/apex/CreditScoreCalculationService.createCreditScoreRequest';
 
+// Note: lightning/community module not available in all environments
+// Using alternative logout approach
+
 // Get current user ID
 import USER_ID from '@salesforce/user/Id';
+// Get user type to check if guest user
+import USER_TYPE_FIELD from '@salesforce/schema/User.UserType';
 
 // Account fields
 import ACCOUNT_ID_FIELD from '@salesforce/schema/Account.Id';
@@ -36,7 +41,8 @@ const ACCOUNT_FIELDS = [
 const USER_FIELDS = [
     'User.Id',
     'User.ContactId',
-    'User.Contact.AccountId'
+    'User.Contact.AccountId',
+    'User.UserType'
 ];
 
 export default class CustomerDashboard extends NavigationMixin(LightningElement) {
@@ -232,6 +238,17 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
         return this.activeTab === 'requests';
     }
 
+    get isLoggedInUser() {
+        // Check if user is not a guest user
+        if (this.wiredUserResult?.data) {
+            const userType = getFieldValue(this.wiredUserResult.data, USER_TYPE_FIELD);
+            console.log('User type:', userType);
+            return userType && userType !== 'Guest';
+        }
+        // Default to false if we can't determine user type
+        return false;
+    }
+
 
     // Tab navigation handlers
     handleTabClick(event) {
@@ -322,6 +339,83 @@ export default class CustomerDashboard extends NavigationMixin(LightningElement)
                 actionName: 'view'
             }
         });
+    }
+
+    // Login handler
+    handleLogin() {
+        try {
+            // Navigate to login page
+            this[NavigationMixin.Navigate]({
+                type: 'comm__namedPage',
+                attributes: {
+                    name: 'Login'
+                }
+            });
+        } catch (error) {
+            console.error('Error during login navigation:', error);
+            this.showErrorToast('Navigation Error', 'There was an error navigating to login. Please try again.');
+            
+            // Fallback: Try to construct login URL manually
+            try {
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.split('/s/')[0]; // Get base community URL
+                const loginUrl = baseUrl + '/login';
+                window.location.href = loginUrl;
+            } catch (fallbackError) {
+                console.error('Fallback login navigation error:', fallbackError);
+                // Last resort: reload the page
+                window.location.reload();
+            }
+        }
+    }
+
+    // Logout handler - Alternative approach without lightning/community
+    handleLogout() {
+        try {
+            // Show confirmation toast
+            this.showInfoToast('Logging Out', 'You are being logged out...');
+            
+            // Clear browser history to prevent back navigation to dashboard
+            // Replace current history entry so user can't go back
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+            
+            // Clear any cached data
+            if (window.sessionStorage) {
+                window.sessionStorage.clear();
+            }
+            
+            // Alternative logout approach - navigate to logout URL
+            // This works by redirecting to the standard Salesforce logout endpoint
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.split('/s/')[0]; // Get base community URL
+            
+            // Construct logout URL - this will log out the user and redirect to login
+            // const logoutUrl = baseUrl + '/secur/logout.jsp';
+            const logoutUrl = baseUrl + 'login';
+            
+            // Use replace instead of href to prevent back navigation
+            window.location.replace(logoutUrl);
+            
+        } catch (error) {
+            console.error('Error during logout:', error);
+            this.showErrorToast('Logout Error', 'There was an error logging out. Please try again.');
+            
+            // Fallback: Try to navigate to login page
+            try {
+                this[NavigationMixin.Navigate]({
+                    type: 'comm__namedPage',
+                    attributes: {
+                        name: 'Login'
+                    }
+                });
+            } catch (navError) {
+                console.error('Navigation error:', navError);
+                // Last resort: reload the page to clear session
+                window.location.reload();
+            }
+        }
     }
 
     // Utility methods

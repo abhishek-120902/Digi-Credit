@@ -1,0 +1,494 @@
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Error State -->
+    <template if:true={hasError}>
+        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <h2>Error loading customer details: {errorMessage}</h2>
+        </div>
+    </template>
+
+    <!-- Main Content -->
+    <template if:true={account}>
+        <div class="customer-detail-container">
+            <!-- Header Section -->
+            <div class="slds-card slds-m-bottom_medium">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:account" size="large"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="slds-card__header-title slds-text-heading_large">
+                                {accountName}
+                            </h1>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                Customer ID: {externalCustomerId}
+                            </p>
+                        </div>
+                    </header>
+                </div>
+            </div>
+
+            <!-- Main Information Grid -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Left Column - Customer Information -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-3">
+                    <!-- Basic Information Card -->
+                    <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Basic Information
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Customer Name</label>
+                                        <div class="field-value">{accountName}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Phone</label>
+                                        <div class="field-value">
+                                            <template if:true={accountPhone}>
+                                                <lightning-formatted-phone value={accountPhone}></lightning-formatted-phone>
+                                            </template>
+                                            <template if:false={accountPhone}>
+                                                <span class="slds-text-color_weak">Not provided</span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Email</label>
+                                        <div class="field-value">
+                                            <template if:true={accountEmail}>
+                                                <lightning-formatted-email value={accountEmail}></lightning-formatted-email>
+                                            </template>
+                                            <template if:false={accountEmail}>
+                                                <span class="slds-text-color_weak">Not provided</span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Age</label>
+                                        <div class="field-value">
+                                            <template if:true={customerAge}>
+                                                {customerAge} years
+                                            </template>
+                                            <template if:false={customerAge}>
+                                                <span class="slds-text-color_weak">Not provided</span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Account Type</label>
+                                        <div class="field-value">{accountType}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Industry</label>
+                                        <div class="field-value">{accountIndustry}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Details Card -->
+                    <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:record" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Account Details
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">External Customer ID</label>
+                                        <div class="field-value external-id">{externalCustomerId}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Account Owner</label>
+                                        <div class="field-value">{accountOwner}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Created Date</label>
+                                        <div class="field-value">{createdDate}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Credit Score Information -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <!-- Credit Score Card -->
+                    <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:chart" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Credit Score
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="credit-score-section">
+                                <!-- Score Gauge Display -->
+                                <div class="gauge-wrapper">
+                                    <div class="gauge-container">
+                                        <svg class="gauge-svg" viewBox="0 0 200 120" width="200" height="120">
+                                            <!-- Background Arc -->
+                                            <path class="gauge-background" 
+                                                  d="M 20 100 A 80 80 0 0 1 180 100" 
+                                                  fill="none" 
+                                                  stroke="#e5e5e5" 
+                                                  stroke-width="12" 
+                                                  stroke-linecap="round">
+                                            </path>
+                                            <!-- Progress Arc -->
+                                            <path class="gauge-progress" 
+                                                  d="M 20 100 A 80 80 0 0 1 180 100" 
+                                                  fill="none" 
+                                                  stroke={gaugeColor}
+                                                  stroke-width="12" 
+                                                  stroke-linecap="round"
+                                                  stroke-dasharray={gaugeDashArray}
+                                                  stroke-dashoffset={gaugeDashOffset}>
+                                            </path>
+                                        </svg>
+                                        <div class="gauge-content">
+                                            <div class="gauge-score">{currentCreditScore}</div>
+                                        </div>
+                                    </div>
+                                    <div class="gauge-range">
+                                        <span class="range-min">0</span>
+                                        <span class="range-max">750</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="score-details slds-text-align_center slds-m-top_medium">
+                                    <div class="score-status" data-status={creditScoreStatus}>
+                                        <span class={creditScoreStatusClass}>{creditScoreStatus}</span>
+                                    </div>
+                                    <div class="score-range slds-text-body_small slds-m-top_x-small">
+                                        <strong>Range: {scoreRangeText}</strong>
+                                    </div>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                        Last calculated: {lastCalculation}
+                                    </p>
+                                </div>
+
+                                <div class="score-actions slds-m-top_medium slds-text-align_center">
+                                    <lightning-button 
+                                        label="View Credit History" 
+                                        onclick={handleViewCreditHistory}
+                                        variant="outline-brand"
+                                        size="small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Lists Section -->
+            <div class="slds-col slds-size_1-of-1 slds-m-top_large">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <!-- Cases Related List -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-grid slds-wrap">
+                                <div class="slds-col slds-size_10-of-12">
+                                    <h2 class="slds-card__header-title">
+                                        <lightning-icon icon-name="standard:case" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        Recent Cases
+                                    </h2>
+                                </div>
+                                
+                                <div class="slds-no-flex slds-col slds-size_2-of-12">
+                                    <lightning-button 
+                                        label="View All" 
+                                        onclick={handleViewCases}
+                                        variant="neutral"
+                                        size="small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={recentCases}>
+                                    <template if:true={recentCases.length}>
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Case Number</th>
+                                                    <th scope="col">Subject</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Priority</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={recentCases} for:item="caseRecord">
+                                                    <tr key={caseRecord.Id} data-case-id={caseRecord.Id} onclick={handleCaseRowClick} class="clickable-row">
+                                                        <td>{caseRecord.CaseNumber}</td>
+                                                        <td>{caseRecord.Subject}</td>
+                                                        <td>
+                                                            <span class={caseRecord.statusClass}>{caseRecord.Status}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class={caseRecord.priorityClass}>{caseRecord.Priority}</span>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                    <template if:false={recentCases.length}>
+                                        <div class="slds-text-align_center slds-p-around_medium">
+                                            <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                            No cases found for this customer.
+                                        </div>
+                                    </template>
+                                </template>
+                                <template if:true={casesLoading}>
+                                    <div class="slds-text-align_center slds-p-around_medium">
+                                        <lightning-spinner alternative-text="Loading cases..." size="small"></lightning-spinner>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Score Requests Related List -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-grid slds-wrap">
+                                <div class="slds-col slds-size_10-of-12">
+                                    <h2 class="slds-card__header-title">
+                                        <lightning-icon icon-name="custom:custom63" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        Credit Score Requests
+                                    </h2>
+                                </div>
+                                
+                                <div class="slds-no-flex slds-col slds-size_2-of-12">
+                                    <lightning-button 
+                                        label="View All" 
+                                        onclick={handleViewCreditRequests}
+                                        variant="neutral"
+                                        size="small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={recentCreditRequests}>
+                                    <template if:true={recentCreditRequests.length}>
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Request Date</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Channel</th>
+                                                    <th scope="col">Score</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={recentCreditRequests} for:item="request">
+                                                    <tr key={request.Id} onclick={request.handleRequestClick} class="clickable-row">
+                                                        <td>{request.formattedRequestDate}</td>
+                                                        <td>
+                                                            <span class={request.statusClass}>{request.Request_Status__c}</span>
+                                                        </td>
+                                                        <td>{request.Request_Channel__c}</td>
+                                                        <td>
+                                                            <template if:true={request.Credit_Score_Result__r}>
+                                                                <template if:true={request.Credit_Score_Result__r.Total_Score__c}>
+                                                                    <strong>{request.Credit_Score_Result__r.Total_Score__c}</strong>
+                                                                </template>
+                                                                <template if:false={request.Credit_Score_Result__r.Total_Score__c}>
+                                                                    <span class="slds-text-color_weak">Pending</span>
+                                                                </template>
+                                                            </template>
+                                                            <template if:false={request.Credit_Score_Result__r}>
+                                                                <span class="slds-text-color_weak">Pending</span>
+                                                            </template>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                    <template if:false={recentCreditRequests.length}>
+                                        <div class="slds-text-align_center slds-p-around_medium">
+                                            <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                            No credit score requests found.
+                                        </div>
+                                    </template>
+                                </template>
+                                <template if:true={requestsLoading}>
+                                    <div class="slds-text-align_center slds-p-around_medium">
+                                        <lightning-spinner alternative-text="Loading requests..." size="small"></lightning-spinner>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Records Related List -->
+                    <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
+                        <div class="slds-card">
+                            <div class="slds-card__header slds-grid slds-wrap">
+                                <div class="slds-col slds-size_11-of-12">
+                                    <h2 class="slds-card__header-title">
+                                        <lightning-icon icon-name="standard:orders" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        Recent Billing Records
+                                    </h2>
+                                </div>
+                                <div class="slds-no-flex slds-col slds-size_1-of-12">
+                                    <lightning-button 
+                                        label="View All" 
+                                        onclick={handleViewBillingRecords}
+                                        variant="neutral"
+                                        size="small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={recentBillingRecords}>
+                                    <template if:true={recentBillingRecords.length}>
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Billing ID</th>
+                                                    <th scope="col">Due Date</th>
+                                                    <th scope="col">Payment Date</th>
+                                                    <th scope="col">Amount</th>
+                                                    <th scope="col">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={recentBillingRecords} for:item="billing">
+                                                    <tr key={billing.Id}>
+                                                        <td>{billing.Billing_ID__c}</td>
+                                                        <td>{billing.formattedDueDate}</td>
+                                                        <td>{billing.formattedPaymentDate}</td>
+                                                        <td>
+                                                            <template if:true={billing.formattedAmount}>
+                                                                <strong>{billing.formattedAmount}</strong>
+                                                            </template>
+                                                            <template if:false={billing.formattedAmount}>
+                                                                <span class="slds-text-color_weak">N/A</span>
+                                                            </template>
+                                                        </td>
+                                                        <td>
+                                                            <span class={billing.paymentStatusClass}>
+                                                                {billing.paymentStatusText}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                    <template if:false={recentBillingRecords.length}>
+                                        <div class="slds-text-align_center slds-p-around_medium">
+                                            <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                            No billing records found.
+                                        </div>
+                                    </template>
+                                </template>
+                                <template if:true={billingLoading}>
+                                    <div class="slds-text-align_center slds-p-around_medium">
+                                        <lightning-spinner alternative-text="Loading billing records..." size="small"></lightning-spinner>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit History Modal -->
+        <template if:true={showCreditHistory}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="Close" onclick={handleCloseCreditHistory}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">Credit Score History</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={creditScoreHistory}>
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Score</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Base</th>
+                                        <th scope="col">Internal</th>
+                                        <th scope="col">Billing</th>
+                                        <th scope="col">API</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={creditScoreHistory} for:item="score">
+                                        <tr key={score.Id}>
+                                            <td>{score.formattedDate}</td>
+                                            <td><strong>{score.Total_Score__c}</strong></td>
+                                            <td>
+                                                <span class={score.statusClass}>{score.Score_Status__c}</span>
+                                            </td>
+                                            <td>{score.Base_Score__c}</td>
+                                            <td>{score.Internal_Fields_Score__c}</td>
+                                            <td>{score.External_Billing_Score__c}</td>
+                                            <td>{score.API_Score__c}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="Close" 
+                            onclick={handleCloseCreditHistory}
+                            variant="neutral">
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </template>
+</template>

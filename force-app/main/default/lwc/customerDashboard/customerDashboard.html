@@ -24,6 +24,8 @@
                 </div>
                 <div class="slds-page-header__col-actions">
                     <div class="slds-page-header__controls">
+                        
+                        <template if:true={isLoggedInUser}>
                         <lightning-button 
                             label="View Credit Score" 
                             variant="neutral" 
@@ -60,6 +62,23 @@
                             icon-name="utility:add"
                             class="slds-m-left_x-small">
                         </lightning-button>
+                            <lightning-button 
+                                label="Logout" 
+                                variant="destructive" 
+                                onclick={handleLogout}
+                                icon-name="utility:logout"
+                                class="slds-m-left_x-small">
+                            </lightning-button>
+                        </template>
+                        <template if:false={isLoggedInUser}>
+                            <lightning-button 
+                                label="Login" 
+                                variant="brand" 
+                                onclick={handleLogin}
+                                icon-name="utility:user"
+                                class="slds-m-left_x-small">
+                            </lightning-button>
+                        </template>
                     </div>
                 </div>
             </div>

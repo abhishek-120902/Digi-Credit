@@ -1,0 +1,249 @@
+<template>
+    <!-- Component Header with Refresh Button -->
+    <div class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:related_list" size="medium"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title slds-text-heading_medium">
+                        Related Lists
+                    </h2>
+                </div>
+            </header>
+            <div class="slds-no-flex">
+                <lightning-button 
+                    label="Refresh All" 
+                    onclick={handleRefresh}
+                    variant="neutral"
+                    icon-name="utility:refresh"
+                    size="small">
+                </lightning-button>
+            </div>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- <div class="slds-grid slds-wrap slds-gutters"> -->
+                
+                <!-- Cases Related List -->
+                <template if:true={showCases}>
+                    <!-- <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"> -->
+                        <div class="slds-card related-list-card">
+                            <div class="slds-card__header">
+                                <h3 class="slds-card__header-title">
+                                    <lightning-icon icon-name="standard:case" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Cases (Assigned to Me)
+                                </h3>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={hasCases}>
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped related-list-table">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th scope="col">Case Number</th>
+                                                    <th scope="col">Subject</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Priority</th>
+                                                    <th scope="col">Created</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={recentCases} for:item="caseRecord">
+                                                    <tr key={caseRecord.Id} 
+                                                        data-case-id={caseRecord.Id} 
+                                                        onclick={handleCaseRowClick} 
+                                                        class="clickable-row">
+                                                        <td>
+                                                            <lightning-button 
+                                                                label={caseRecord.CaseNumber}
+                                                                variant="base"
+                                                                class="case-link">
+                                                            </lightning-button>
+                                                        </td>
+                                                        <td title={caseRecord.Subject}>
+                                                            <div class="slds-truncate">{caseRecord.Subject}</div>
+                                                        </td>
+                                                        <td>
+                                                            <span class={caseRecord.statusClass}>{caseRecord.Status}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class={caseRecord.priorityClass}>{caseRecord.Priority}</span>
+                                                        </td>
+                                                        <td>{caseRecord.formattedCreatedDate}</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                </template>
+                                <template if:false={hasCases}>
+                                    <div class="slds-text-align_center slds-p-around_medium related-list-empty">
+                                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        {noCasesMessage}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+                </template>
+
+                <!-- Credit Score History Related List -->
+                <template if:true={showCreditScores}>
+                    <!-- <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"> -->
+                        <div class="slds-card related-list-card">
+                            <div class="slds-card__header">
+                                <h3 class="slds-card__header-title">
+                                    <lightning-icon icon-name="utility:chart" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Credit Score History
+                                </h3>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={hasCreditScores}>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped related-list-table">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Score</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Change</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={creditScoreHistory} for:item="score">
+                                                <tr key={score.Id} 
+                                                    data-score-id={score.Id} 
+                                                    onclick={handleCreditScoreRowClick} 
+                                                    class="clickable-row">
+                                                    <td>{score.formattedDate}</td>
+                                                    <td>
+                                                        <strong class="score-value">{score.Total_Score__c}</strong>
+                                                    </td>
+                                                    <td>
+                                                        <span class={score.statusClass}>{score.Score_Status__c}</span>
+                                                    </td>
+                                                    <td>
+                                                        <template if:true={score.scoreChange}>
+                                                            <template if:true={score.scoreChange.isPositive}>
+                                                                <span class="score-change-positive">
+                                                                    {score.scoreChange.displayValue}
+                                                                </span>
+                                                            </template>
+                                                            <template if:false={score.scoreChange.isPositive}>
+                                                                <span class="score-change-negative">
+                                                                    {score.scoreChange.displayValue}
+                                                                </span>
+                                                            </template>
+                                                        </template>
+                                                        <template if:false={score.scoreChange}>
+                                                            <span class="slds-text-color_weak">-</span>
+                                                        </template>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </template>
+                                <template if:false={hasCreditScores}>
+                                    <div class="slds-text-align_center slds-p-around_medium related-list-empty">
+                                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        {noCreditScoresMessage}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+                </template>
+
+                <!-- Billing Records Related List -->
+                <template if:true={showBillingRecords}>
+                    <!-- <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"> -->
+                        <div class="slds-card related-list-card">
+                            <div class="slds-card__header">
+                                <h3 class="slds-card__header-title">
+                                    <lightning-icon icon-name="standard:orders" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Billing Records
+                                </h3>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={hasBillingRecords}>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped related-list-table">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th scope="col">Billing ID</th>
+                                                <th scope="col">Due Date</th>
+                                                <th scope="col">Payment Date</th>
+                                                <th scope="col">Amount</th>
+                                                <th scope="col">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={recentBillingRecords} for:item="billing">
+                                                <!-- <tr key={billing.Id} 
+                                                    data-billing-id={billing.Id} 
+                                                    onclick={handleBillingRowClick} 
+                                                    class="clickable-row"> -->
+                                                <tr key={billing.Id} 
+                                                    data-billing-id={billing.Id}
+                                                    class="clickable-row">
+                                                    <td>
+                                                        <!-- <lightning-button 
+                                                            label={billing.Billing_ID__c}
+                                                            variant="base"
+                                                            class="billing-link">
+                                                        </lightning-button> -->
+                                                        {billing.Billing_ID__c}
+                                                    </td>
+                                                    <td>{billing.formattedDueDate}</td>
+                                                    <td>{billing.formattedPaymentDate}</td>
+                                                    <td>
+                                                        <template if:true={billing.formattedAmount}>
+                                                            <strong>{billing.formattedAmount}</strong>
+                                                        </template>
+                                                        <template if:false={billing.formattedAmount}>
+                                                            <span class="slds-text-color_weak">N/A</span>
+                                                        </template>
+                                                    </td>
+                                                    <td>
+                                                        <span class={billing.paymentStatusClass}>
+                                                            {billing.paymentStatusText}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </template>
+                                <template if:false={hasBillingRecords}>
+                                    <div class="slds-text-align_center slds-p-around_medium related-list-empty">
+                                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                        {noBillingMessage}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+                </template>
+
+            <!-- </div> -->
+        </div>
+    </div>
+
+    <!-- No Related Lists Message -->
+    <template if:false={showCases}>
+        <template if:false={showCreditScores}>
+            <template if:false={showBillingRecords}>
+                <div class="slds-card">
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <lightning-icon icon-name="utility:info" size="medium" class="slds-m-bottom_small"></lightning-icon>
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">No Related Lists Configured</h3>
+                            <p class="slds-text-body_regular">
+                                Configure the component properties to display Cases, Credit Scores, or Billing Records.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+    </template>
+</template>

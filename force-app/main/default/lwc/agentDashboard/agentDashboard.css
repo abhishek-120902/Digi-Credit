@@ -1,0 +1,74 @@
+.slds-box {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #d8dde6;
+}
+
+.slds-scrollable_y {
+    overflow-y: auto;
+}
+
+.slds-tabs_default__content {
+    padding: 1rem 0;
+}
+
+.slds-modal__container {
+    max-width: 50rem;
+}
+
+.dashboard-stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.case-item:hover {
+    background-color: #f3f3f3;
+    cursor: pointer;
+}
+
+.customer-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.search-section {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: #706e6b;
+}
+
+.empty-state lightning-icon {
+    opacity: 0.5;
+}
+
+.tab-content {
+    min-height: 400px;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}

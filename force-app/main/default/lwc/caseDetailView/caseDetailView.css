@@ -1,0 +1,558 @@
+/* Case Detail View Component Styles */
+
+/* Main Container */
+.case-detail-container {
+    padding: 1rem;
+    background-color: #f3f3f3;
+    min-height: 100vh;
+}
+
+/* Card Styling */
+.slds-card {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+}
+
+.slds-card__header {
+    background-color: #fafaf9;
+    border-bottom: 1px solid #d8dde6;
+    border-radius: 0.25rem 0.25rem 0 0;
+    padding-bottom: 0.75rem;
+}
+
+.slds-card__header-title {
+    font-weight: 600;
+    color: #181818;
+    display: flex;
+    align-items: center;
+}
+
+.slds-card__body {
+    padding: 1rem;
+}
+
+/* Header Section */
+.slds-card__header .slds-media__body h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #181818;
+    margin: 0;
+}
+
+.slds-card__header .slds-media__body p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+}
+
+/* Field Groups */
+.field-group {
+    margin-bottom: 1rem;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #181818;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Special Field Styling */
+.case-number {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0176d3;
+}
+
+.subject-text {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #181818;
+}
+
+.description-text {
+    line-height: 1.6;
+    color: #181818;
+}
+
+/* Comments Styling */
+.comments-text {
+    line-height: 1.6;
+    color: #181818;
+    background-color: #f8f9fa;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 2rem;
+}
+
+/* Status Badges */
+.slds-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+}
+
+.slds-badge_lightest {
+    background-color: #f3f3f3;
+    color: #181818;
+    border: 1px solid #d8dde6;
+}
+
+.slds-theme_warning {
+    background-color: #fef7e0;
+    color: #b45000;
+    border: 1px solid #ffb75d;
+}
+
+.slds-theme_error {
+    background-color: #feded8;
+    color: #ba0517;
+    border: 1px solid #fe5c5c;
+}
+
+.slds-theme_success {
+    background-color: #d9f7e8;
+    color: #027e46;
+    border: 1px solid #4bca81;
+}
+
+/* Priority Styling */
+.priority-high {
+    color: #c23934;
+    font-weight: 700;
+}
+
+.priority-high::before {
+    content: "🔴 ";
+    margin-right: 0.25rem;
+}
+
+.priority-medium {
+    color: #fe9339;
+    font-weight: 600;
+}
+
+.priority-medium::before {
+    content: "🟡 ";
+    margin-right: 0.25rem;
+}
+
+.priority-low {
+    color: #04844b;
+    font-weight: 500;
+}
+
+.priority-low::before {
+    content: "🟢 ";
+    margin-right: 0.25rem;
+}
+
+.priority-normal {
+    color: #706e6b;
+    font-weight: 500;
+}
+
+/* Navigation Links */
+.account-link,
+.contact-link {
+    color: #0176d3;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.account-link:hover,
+.contact-link:hover {
+    color: #014486;
+    text-decoration: underline;
+}
+
+/* Button Styling */
+.slds-button {
+    transition: all 0.2s ease;
+}
+
+.slds-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slds-button:active {
+    transform: translateY(0);
+}
+
+/* Loading Spinner */
+.slds-spinner_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Error Alert */
+.slds-alert_error {
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+/* Modal Styling */
+.slds-modal {
+    z-index: 10000;
+}
+
+.slds-modal__container {
+    max-width: 50rem;
+    width: 90%;
+}
+
+.slds-modal__header {
+    background-color: #fafaf9;
+    border-bottom: 1px solid #d8dde6;
+}
+
+.slds-modal__content {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.slds-modal__footer {
+    background-color: #fafaf9;
+    border-top: 1px solid #d8dde6;
+    padding: 1rem;
+    text-align: right;
+}
+
+.slds-modal__footer .slds-button {
+    margin-left: 0.5rem;
+}
+
+/* Grid Layout Enhancements */
+.slds-grid.slds-wrap.slds-gutters {
+    margin: -0.5rem;
+}
+
+.slds-col {
+    padding: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .case-detail-container {
+        padding: 0.5rem;
+    }
+    
+    .slds-card__body {
+        padding: 0.75rem;
+    }
+    
+    .field-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .slds-card__header .slds-media__body h1 {
+        font-size: 1.25rem;
+    }
+    
+    .slds-button-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .slds-button-group .slds-button {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .case-detail-container {
+        padding: 0.25rem;
+    }
+    
+    .slds-card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .slds-card__body {
+        padding: 0.5rem;
+    }
+    
+    .field-group {
+        margin-bottom: 0.5rem;
+    }
+    
+    .field-label {
+        font-size: 0.6875rem;
+    }
+    
+    .field-value {
+        font-size: 0.8125rem;
+    }
+    
+    .slds-card__header .slds-grid {
+        display: block;
+    }
+    
+    .slds-card__header .slds-no-flex {
+        margin-top: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .case-detail-container {
+        background-color: white;
+        padding: 0;
+    }
+    
+    .slds-card {
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+    
+    .slds-button,
+    .slds-button-group {
+        display: none;
+    }
+    
+    .slds-card__header {
+        background-color: #f0f0f0;
+    }
+    
+    .field-label {
+        color: #000;
+    }
+    
+    .field-value {
+        color: #000;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .slds-card {
+        border: 2px solid #000;
+    }
+    
+    .slds-card__header {
+        background-color: #fff;
+        border-bottom: 2px solid #000;
+    }
+    
+    .field-label {
+        color: #000;
+    }
+    
+    .field-value {
+        color: #000;
+    }
+    
+    .slds-badge {
+        border: 2px solid #000;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .case-detail-container {
+        background-color: #1a1a1a;
+        color: #fff;
+    }
+    
+    .slds-card {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #fff;
+    }
+    
+    .slds-card__header {
+        background-color: #333;
+        border-bottom-color: #444;
+    }
+    
+    .field-label {
+        color: #ccc;
+    }
+    
+    .field-value {
+        color: #fff;
+    }
+    
+    .case-number {
+        color: #4fc3f7;
+    }
+    
+    .subject-text {
+        color: #fff;
+    }
+    
+    .description-text {
+        color: #fff;
+    }
+    
+    .comments-text {
+        color: #fff;
+        background-color: #333;
+        border-color: #555;
+    }
+}
+
+/* Focus States for Accessibility */
+.slds-button:focus,
+.slds-button:focus-visible {
+    box-shadow: 0 0 3px #0176d3;
+    outline: none;
+}
+
+.account-link:focus,
+.contact-link:focus {
+    outline: 2px solid #0176d3;
+    outline-offset: 2px;
+}
+
+/* Animation for Status Changes */
+.slds-badge {
+    transition: all 0.3s ease;
+}
+
+.field-value {
+    transition: color 0.3s ease;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-weight-bold {
+    font-weight: 600;
+}
+
+.font-weight-normal {
+    font-weight: 400;
+}
+
+.margin-bottom-small {
+    margin-bottom: 0.5rem;
+}
+
+.margin-bottom-medium {
+    margin-bottom: 1rem;
+}
+
+.margin-bottom-large {
+    margin-bottom: 1.5rem;
+}
+
+/* Component Specific Overrides */
+.case-detail-view .slds-card__body {
+    padding: 1rem;
+}
+
+.case-detail-view .field-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Enhanced Visual Hierarchy */
+.slds-card__header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #181818;
+    margin: 0;
+}
+
+.slds-card__header lightning-icon {
+    margin-right: 0.5rem;
+}
+
+/* Improved Spacing */
+.slds-grid.slds-gutters_small {
+    margin: -0.25rem;
+}
+
+.slds-grid.slds-gutters_small > .slds-col {
+    padding: 0.25rem;
+}
+
+/* Enhanced Button Group */
+.slds-button-group .slds-button {
+    margin-right: 0;
+}
+
+.slds-button-group .slds-button:not(:last-child) {
+    border-right: none;
+}
+
+/* Loading State Enhancements */
+.slds-spinner_container .slds-spinner {
+    position: relative;
+}
+
+/* Error State Styling */
+.slds-notify.slds-alert_error {
+    background-color: #feded8;
+    border: 1px solid #fe5c5c;
+    color: #ba0517;
+}
+
+/* Success State for Updates */
+.field-value.updated {
+    animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+    0% { background-color: #d9f7e8; }
+    100% { background-color: transparent; }
+}
+
+/* Enhanced Modal Backdrop */
+.slds-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+/* Improved Form Styling in Modal */
+.slds-modal .lightning-input-field {
+    margin-bottom: 1rem;
+}
+
+.slds-modal .slds-form-element__label {
+    font-weight: 600;
+    color: #181818;
+}

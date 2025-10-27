@@ -1,0 +1,310 @@
+<template>
+    <lightning-card title="Agent Dashboard" icon-name="standard:agent_home">
+        <div class="slds-card__body slds-card__body_inner">
+            
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Tab Navigation -->
+            <div class="slds-tabs_default">
+                <ul class="slds-tabs_default__nav" role="tablist">
+                    <li class={tabClasses.overview} title="Overview" role="presentation">
+                        <a class="slds-tabs_default__link" href="#" role="tab" data-tab="overview" onclick={handleTabClick}>
+                            Overview
+                        </a>
+                    </li>
+                    <li class={tabClasses.cases} title="My Cases" role="presentation">
+                        <a class="slds-tabs_default__link" href="#" role="tab" data-tab="cases" onclick={handleTabClick}>
+                            My Cases
+                        </a>
+                    </li>
+                    <li class={tabClasses.customers} title="Customers" role="presentation">
+                        <a class="slds-tabs_default__link" href="#" role="tab" data-tab="customers" onclick={handleTabClick}>
+                            Customers
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Overview Tab Content -->
+                <div if:true={isOverviewTab} class="slds-tabs_default__content slds-show" role="tabpanel">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        
+                        <!-- Dashboard Statistics -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                            <div class="slds-box slds-theme_default">
+                                <div class="slds-text-heading_medium slds-text-color_success">
+                                    {dashboardStats.totalAssignedCases}
+                                </div>
+                                <div class="slds-text-body_small">Total Assigned Cases</div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                            <div class="slds-box slds-theme_default">
+                                <div class="slds-text-heading_medium slds-text-color_warning">
+                                    {dashboardStats.openCases}
+                                </div>
+                                <div class="slds-text-body_small">Open Cases</div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                            <div class="slds-box slds-theme_default">
+                                <div class="slds-text-heading_medium slds-text-color_success">
+                                    {dashboardStats.closedCases}
+                                </div>
+                                <div class="slds-text-body_small">Closed Cases</div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                            <div class="slds-box slds-theme_default">
+                                <div class="slds-text-heading_medium slds-text-color_default">
+                                    {dashboardStats.casesCreatedToday}
+                                </div>
+                                <div class="slds-text-body_small">Cases Created Today</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Recent Activity Summary -->
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-top_large">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-card title="Recent Cases" icon-name="standard:case">
+                                <template if:true={hasAssignedCases}>
+                                    <div class="slds-scrollable_y" style="height: 300px;">
+                                        <template for:each={assignedCases} for:item="caseRecord" for:index="index">
+                                            <div key={caseRecord.Id} class="slds-box slds-box_xx-small slds-m-around_xx-small">
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <div class="slds-col">
+                                                        <div class="slds-text-body_small slds-text-color_weak">
+                                                            {caseRecord.CaseNumber}
+                                                        </div>
+                                                        <div class="slds-truncate">
+                                                            <a href="#" data-id={caseRecord.Id} onclick={handleViewCase}>
+                                                                {caseRecord.Subject}
+                                                            </a>
+                                                        </div>
+                                                        <div class="slds-text-body_small">
+                                                            {caseRecord.accountName}
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-no-flex">
+                                                        <span class={caseRecord.statusClass}>{caseRecord.Status}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template if:false={hasAssignedCases}>
+                                    <div class="slds-text-align_center slds-p-around_medium">
+                                        <p>No cases assigned to you</p>
+                                    </div>
+                                </template>
+                            </lightning-card>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-card title="Recent Customers" icon-name="standard:account">
+                                <template if:true={hasRecentCustomers}>
+                                    <div class="slds-scrollable_y" style="height: 300px;">
+                                        <template for:each={recentCustomers} for:item="customer" for:index="index">
+                                            <div key={customer.Id} class="slds-box slds-box_xx-small slds-m-around_xx-small">
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <div class="slds-col">
+                                                        <div class="slds-truncate">
+                                                            <a href="#" data-id={customer.Id} onclick={handleViewCustomer}>
+                                                                {customer.Name}
+                                                            </a>
+                                                        </div>
+                                                        <div class="slds-text-body_small slds-text-color_weak">
+                                                            {customer.PersonEmail}
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-no-flex">
+                                                        <span class={customer.scoreStatusClass}>{customer.displayScore}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template if:false={hasRecentCustomers}>
+                                    <div class="slds-text-align_center slds-p-around_medium">
+                                        <p>No customers found</p>
+                                    </div>
+                                </template>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cases Tab Content -->
+                <div if:true={isCasesTab} class="slds-tabs_default__content slds-show" role="tabpanel">
+                    
+                    <!-- Case Search and Filters -->
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <lightning-input 
+                                type="search" 
+                                label="Search Cases" 
+                                value={searchTerm}
+                                onchange={handleSearchTermChange}
+                                placeholder="Search by case number, subject, or account...">
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6">
+                            <lightning-combobox
+                                label="Status"
+                                value={statusFilter}
+                                options={caseStatusOptions}
+                                onchange={handleStatusFilterChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6">
+                            <lightning-combobox
+                                label="Priority"
+                                value={priorityFilter}
+                                options={casePriorityOptions}
+                                onchange={handlePriorityFilterChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-grid slds-grid_align-end">
+                            <lightning-button 
+                                label="Search" 
+                                onclick={handleCaseSearch}
+                                variant="brand"
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <lightning-button 
+                                label="Clear" 
+                                onclick={handleClearSearch}
+                                variant="neutral">
+                            </lightning-button>
+                            <!-- <lightning-button 
+                                label="New Case" 
+                                onclick={handleCreateCase}
+                                variant="success"
+                                class="slds-m-left_x-small">
+                            </lightning-button> -->
+                        </div>
+                    </div>
+
+                    <!-- Cases Table -->
+                    <template if:true={hasAssignedCases}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={assignedCases}
+                            columns={caseColumns}
+                            onrowaction={handleCaseRowAction}
+                            hide-checkbox-column="true">
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasAssignedCases}>
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <lightning-icon icon-name="standard:case" size="large"></lightning-icon>
+                            <p class="slds-text-heading_medium slds-m-top_medium">No cases found</p>
+                            <p class="slds-text-body_regular">You don't have any cases assigned or matching your search criteria.</p>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Customers Tab Content -->
+                <div if:true={isCustomersTab} class="slds-tabs_default__content slds-show" role="tabpanel">
+                    <template if:true={hasRecentCustomers}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <template for:each={recentCustomers} for:item="customer" for:index="index">
+                                <div key={customer.Id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                                    <lightning-card>
+                                        <div class="slds-p-around_medium">
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                                <h3 class="slds-text-heading_small">
+                                                    <a href="#" data-id={customer.Id} onclick={handleViewCustomer}>
+                                                        {customer.Name}
+                                                    </a>
+                                                </h3>
+                                                <span class={customer.scoreStatusClass}>{customer.displayScore}</span>
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-color_weak">
+                                                <p>{customer.PersonEmail}</p>
+                                                <p>{customer.Phone}</p>
+                                                <p>Last Calculation: {customer.formattedLastCalculation}</p>
+                                            </div>
+                                        </div>
+                                    </lightning-card>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:false={hasRecentCustomers}>
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <lightning-icon icon-name="standard:account" size="large"></lightning-icon>
+                            <p class="slds-text-heading_medium slds-m-top_medium">No customers found</p>
+                            <p class="slds-text-body_regular">No customer records are available.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+
+    <!-- Case Update Modal -->
+    <template if:true={showCaseModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={handleCaseModalClose}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Update Case: {selectedCase.CaseNumber}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Subject</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-text-body_regular">{selectedCase.Subject}</div>
+                            </div>
+                        </div>
+                        
+                        <lightning-combobox
+                            label="Status"
+                            value={caseUpdateStatus}
+                            options={caseUpdateStatusOptions}
+                            onchange={handleCaseStatusChange}
+                            class="slds-m-top_medium">
+                        </lightning-combobox>
+                        
+                        <lightning-textarea
+                            label="Add Notes"
+                            value={caseUpdateNotes}
+                            onchange={handleCaseNotesChange}
+                            placeholder="Enter additional notes or updates..."
+                            class="slds-m-top_medium">
+                        </lightning-textarea>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Cancel" 
+                        onclick={handleCaseModalClose}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Update Case" 
+                        onclick={handleCaseUpdate}
+                        variant="brand"
+                        disabled={isLoading}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

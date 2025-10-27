@@ -1,0 +1,25 @@
+Welcome to DigiCredit Community Portal!
+
+Dear {!User.FirstName},
+
+Welcome to the DigiCredit Community Portal! Your account has been successfully created.
+
+Here are your account details:
+- Username: {!User.Username}
+- Email: {!User.Email}
+
+You can now access the DigiCredit Community Portal to:
+- View your credit score
+- Request credit score updates
+- Access your financial dashboard
+- Get support for your credit-related queries
+
+To get started, please visit: {!Community.Url}
+
+If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+Best regards,
+The DigiCredit Team
+
+---
+This is an automated message. Please do not reply to this email.

@@ -1,0 +1,501 @@
+/* Customer Detail View Styles */
+
+.customer-detail-container {
+    padding: 1rem;
+    /* background-color: #f3f3f3; */
+    min-height: 100vh;
+}
+
+/* Field Groups */
+.field-group {
+    margin-bottom: 1rem;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #3e3e3c;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #181818;
+    font-weight: 400;
+    line-height: 1.25;
+    word-wrap: break-word;
+}
+
+.slds-badge_success {
+    background-color: #d9f7e8;
+    color: #027e46;
+}
+
+.slds-badge_error {
+    background-color: #feded8;
+    color: #ba0517;
+}
+
+.external-id {
+    font-family: 'Courier New', monospace;
+    background-color: #f4f6f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #d8dde6;
+    display: inline-block;
+}
+
+/* Credit Score Styling */
+.credit-score-section {
+    text-align: center;
+}
+
+.credit-score-display {
+    margin-bottom: 1rem;
+}
+
+.credit-score {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.credit-score.excellent .score-number {
+    color: #04844b;
+    font-weight: 700;
+}
+
+.credit-score.good .score-number {
+    color: #fe9339;
+    font-weight: 700;
+}
+
+.credit-score.poor .score-number {
+    color: #c23934;
+    font-weight: 700;
+}
+
+.score-number {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.score-max {
+    font-size: 1.5rem;
+    color: #706e6b;
+    margin-left: 0.25rem;
+}
+
+.score-status {
+    margin-top: 0.5rem;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.action-button {
+    width: 100%;
+}
+
+/* Credit History Modal Styles */
+.slds-modal__container {
+    max-width: 80rem;
+    width: 90%;
+}
+
+.slds-table th,
+.slds-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.slds-table th:first-child,
+.slds-table td:first-child {
+    text-align: left;
+}
+
+/* Status badges in table */
+.excellent {
+    color: #04844b;
+    font-weight: 600;
+}
+
+.good {
+    color: #fe9339;
+    font-weight: 600;
+}
+
+.poor {
+    color: #c23934;
+    font-weight: 600;
+}
+
+.unknown {
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Card Enhancements */
+.slds-card {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid #d8dde6;
+}
+
+.slds-card__header {
+    background-color: #fafaf9;
+    border-bottom: 1px solid #d8dde6;
+    padding-bottom: 0.75rem;
+}
+
+.slds-card__header-title {
+    font-weight: 600;
+    color: #181818;
+    display: flex;
+    align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .customer-detail-container {
+        padding: 0.5rem;
+    }
+    
+    .slds-grid.slds-gutters {
+        margin: 0;
+    }
+    
+    .slds-col {
+        padding: 0.25rem;
+    }
+    
+    .score-number {
+        font-size: 2.5rem;
+    }
+    
+    .score-max {
+        font-size: 1.25rem;
+    }
+    
+    .quick-actions {
+        gap: 0.25rem;
+    }
+}
+
+/* Loading State */
+.slds-spinner_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header Section Enhancements */
+.slds-card__header .slds-media__body h1 {
+    margin-bottom: 0.75rem;
+}
+
+.slds-card__header .slds-media__body p {
+    margin: 0;
+}
+
+/* Button Group Styling */
+.slds-button-group .slds-button {
+    margin: 0;
+}
+
+/* Field Value Enhancements */
+.field-value:empty::after {
+    content: "Not provided";
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Credit Score Card Special Styling */
+.credit-score-section .field-group {
+    text-align: left;
+    margin-bottom: 0.75rem;
+}
+
+.score-details .field-label {
+    text-align: left;
+}
+
+.score-details .field-value {
+    text-align: left;
+}
+
+/* Action Buttons Hover Effects */
+.action-button:hover {
+    transform: translateY(-1px);
+    transition: transform 0.1s ease-in-out;
+}
+
+/* Table Enhancements */
+.slds-table_bordered th,
+.slds-table_bordered td {
+    border: 1px solid #d8dde6;
+}
+
+.slds-table thead th {
+    background-color: #f4f6f9;
+    font-weight: 600;
+    color: #181818;
+}
+
+/* Modal Backdrop */
+.slds-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Error State Styling */
+.slds-alert_error {
+    margin: 1rem;
+}
+
+/* Icon Alignment */
+.slds-card__header-title lightning-icon {
+    margin-right: 0.5rem;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Focus States */
+.slds-button:focus,
+.slds-button:focus-visible {
+    box-shadow: 0 0 3px #0176d3;
+    outline: none;
+}
+
+/* Related Lists Styling */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.related-list-card {
+    min-height: 300px;
+}
+
+.related-list-table {
+    font-size: 0.875rem;
+}
+
+.related-list-table th {
+    font-weight: 600;
+    color: var(--slds-g-color-neutral-base-10, #181818);
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.related-list-table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+.related-list-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #706e6b;
+    font-style: italic;
+}
+
+.related-list-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Status badges for related lists */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-new {
+    background-color: #f3f3f3;
+    color: #181818;
+}
+
+.status-working {
+    background-color: #fef7e0;
+    color: #b45000;
+}
+
+.status-escalated {
+    background-color: #feded8;
+    color: #ba0517;
+}
+
+.status-closed {
+    background-color: #d9f7e8;
+    color: #027e46;
+}
+
+.status-pending {
+    background-color: #f3f3f3;
+    color: #706e6b;
+}
+
+.status-processing {
+    background-color: #fef7e0;
+    color: #b45000;
+}
+
+.status-completed {
+    background-color: #d9f7e8;
+    color: #027e46;
+}
+
+.status-failed {
+    background-color: #feded8;
+    color: #ba0517;
+}
+
+/* Credit Score Display Section */
+.credit-score-analysis {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #d8dde6;
+}
+
+/* Gauge Styles */
+.gauge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.gauge-container {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.gauge-svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.gauge-content {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+}
+
+.gauge-range {
+    display: flex;
+    justify-content: space-between;
+    width: 160px;
+    margin: 0 auto;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.range-min {
+    text-align: left;
+}
+
+.range-max {
+    text-align: right;
+}
+
+/* Score Status Styles */
+.score-status {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.status-poor {
+    background-color: #c23934;
+    color: white;
+}
+
+.status-good {
+    background-color: #ffb75d;
+    color: #333;
+}
+
+.status-excellent {
+    background-color: #4bca81;
+    color: white;
+}
+
+.status-unknown {
+    background-color: #747474;
+    color: white;
+}
+
+.score-status-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Print Styles */
+@media print {
+    .customer-detail-container {
+        background-color: white;
+        padding: 0;
+    }
+    
+    .slds-card {
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+    
+    .slds-button,
+    .quick-actions {
+        display: none;
+    }
+    
+    .related-list-card {
+        page-break-inside: avoid;
+    }
+}

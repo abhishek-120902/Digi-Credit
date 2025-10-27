@@ -177,6 +177,18 @@
     color: #1589ee;
 }
 
+.slds-button_destructive {
+    background: linear-gradient(135deg, #c23934 0%, #a02622 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.slds-button_destructive:hover {
+    background: linear-gradient(135deg, #a02622 0%, #8b1e1b 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(194, 57, 52, 0.3);
+}
+
 /* Page Header Enhancements */
 .slds-page-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

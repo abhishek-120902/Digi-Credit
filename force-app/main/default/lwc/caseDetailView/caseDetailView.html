@@ -1,0 +1,386 @@
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Edit Loading Spinner -->
+    <template if:true={isEditLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium">
+                <span class="slds-assistive-text">Loading Edit Form...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Error State -->
+    <template if:true={hasError}>
+        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <h2>Error loading case details: {errorMessage}</h2>
+        </div>
+    </template>
+
+    <!-- Main Content -->
+    <template if:true={caseData}>
+        <div class="case-detail-container">
+            <!-- Header Section -->
+            <div class="slds-card slds-m-bottom_medium">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:case" size="large"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="slds-card__header-title slds-text-heading_large">
+                                {caseNumber}
+                            </h1>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                Case Details
+                            </p>
+                        </div>
+                    </header>
+                    <div class="slds-no-flex">
+                        <div class="slds-button-group" role="group">
+                            <template if:false={isClosed}>
+                                <lightning-button 
+                                    label="Edit Case" 
+                                    onclick={handleEdit}
+                                    variant="neutral"
+                                    icon-name="utility:edit"
+                                    disabled={isLoading}
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button 
+                                    label="Close Case" 
+                                    onclick={handleCloseCase}
+                                    variant="destructive"
+                                    icon-name="utility:close"
+                                    disabled={isLoading}>
+                                </lightning-button>
+                            </template>
+                            <template if:true={isClosed}>
+                                <lightning-button 
+                                    label="Reopen Case" 
+                                    onclick={handleReopenCase}
+                                    variant="brand"
+                                    icon-name="utility:refresh"
+                                    disabled={isLoading}>
+                                </lightning-button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Information Grid -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Left Column - Case Details -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-3">
+                    <!-- Basic Case Information -->
+                    <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Case Information
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Case Number</label>
+                                        <div class="field-value case-number">{caseNumber}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Status</label>
+                                        <div class="field-value">
+                                            <span class={statusClass}>{status}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Priority</label>
+                                        <div class="field-value">
+                                            <span class={priorityClass}>{priority}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Origin</label>
+                                        <div class="field-value">{origin}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Type</label>
+                                        <div class="field-value">{type}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Reason</label>
+                                        <div class="field-value">{reason}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Subject</label>
+                                        <div class="field-value subject-text">{subject}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Description</label>
+                                        <div class="field-value subject-text">{description}</div>
+                                    </div>
+                                </div>
+                                <!-- <div class="slds-col slds-size_1-of-2">
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Comments</label>
+                                        <div class="field-value subject-text">{comments}</div>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case Description -->
+                    <!-- <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:description" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Description
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <template if:true={description}>
+                                <div class="description-text">
+                                    {description}
+                                </div>
+                            </template>
+                            <template if:false={description}>
+                                <div class="slds-text-color_weak slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    No description provided
+                                </div>
+                            </template>
+                        </div>
+                    </div> -->
+
+                    <!-- Case Comments -->
+                    <!-- <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:comments" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Comments
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <template if:true={comments}>
+                                <div class="comments-text">
+                                    {comments}
+                                </div>
+                            </template>
+                            <template if:false={comments}>
+                                <div class="slds-text-color_weak slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    No agent comments added yet
+                                </div>
+                            </template>
+                        </div>
+                    </div> -->
+                </div>
+
+                <!-- Right Column - Related Information -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <!-- Account Information -->
+                    <template if:true={accountName}>
+                        <div class="slds-card slds-m-bottom_medium">
+                            <div class="slds-card__header">
+                                <h2 class="slds-card__header-title">
+                                    <lightning-icon icon-name="standard:account" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Account
+                                </h2>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="field-group">
+                                    <label class="slds-form-element__label field-label">Account Name</label>
+                                    <div class="field-value">
+                                        <lightning-button 
+                                            label={accountName}
+                                            variant="base"
+                                            onclick={handleNavigateToAccount}
+                                            class="account-link">
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Contact Information -->
+                    <!-- <template if:true={contactName}>
+                        <div class="slds-card slds-m-bottom_medium">
+                            <div class="slds-card__header">
+                                <h2 class="slds-card__header-title">
+                                    <lightning-icon icon-name="standard:contact" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Contact
+                                </h2>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="field-group slds-m-bottom_small">
+                                    <label class="slds-form-element__label field-label">Contact Name</label>
+                                    <div class="field-value">
+                                        <lightning-button 
+                                            label={contactName}
+                                            variant="base"
+                                            onclick={handleNavigateToContact}
+                                            class="contact-link">
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                                <template if:true={contactEmail}>
+                                    <div class="field-group slds-m-bottom_small">
+                                        <label class="slds-form-element__label field-label">Email</label>
+                                        <div class="field-value">
+                                            <lightning-formatted-email value={contactEmail}></lightning-formatted-email>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template if:true={contactPhone}>
+                                    <div class="field-group">
+                                        <label class="slds-form-element__label field-label">Phone</label>
+                                        <div class="field-value">
+                                            <lightning-formatted-phone value={contactPhone}></lightning-formatted-phone>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template> -->
+
+                    <!-- Case Ownership & Dates -->
+                    <div class="slds-card slds-m-bottom_medium">
+                        <div class="slds-card__header">
+                            <h2 class="slds-card__header-title">
+                                <lightning-icon icon-name="utility:user" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Case Details
+                            </h2>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="field-group slds-m-bottom_small">
+                                <label class="slds-form-element__label field-label">Case Owner</label>
+                                <div class="field-value">{ownerName}</div>
+                            </div>
+                            <div class="field-group slds-m-bottom_small">
+                                <label class="slds-form-element__label field-label">Created Date</label>
+                                <div class="field-value">{createdDate}</div>
+                            </div>
+                            <div class="field-group slds-m-bottom_small">
+                                <label class="slds-form-element__label field-label">Last Modified</label>
+                                <div class="field-value">{lastModifiedDate}</div>
+                            </div>
+                            <div class="field-group">
+                                <label class="slds-form-element__label field-label">Closed Date</label>
+                                <div class="field-value">
+                                    <template if:true={isClosed}>
+                                        {closedDate}
+                                    </template>
+                                    <template if:false={isClosed}>
+                                        <span class="slds-text-color_weak">Not Closed</span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Simplified Edit Modal - Only Type, Origin, and Comments -->
+    <template if:true={isEditing}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={handleCancel}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">Edit Case - {caseNumber}</h2>
+                    <p class="slds-m-top_x-small slds-text-body_small slds-text-color_weak">
+                        Update case fields that agents are allowed to modify
+                    </p>
+                </header>
+                <div class="slds-modal__content">
+                    <lightning-record-edit-form 
+                        record-id={effectiveRecordId}
+                        object-api-name="Case"
+                        onsuccess={handleSave}
+                        onerror={handleError}
+                        onload={handleLoad}
+                        onsubmit={handleSubmit}>
+                        
+                        <div class="slds-grid slds-wrap slds-gutters slds-p-around_medium">
+                            <!-- Type Field -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name="Type"></lightning-input-field>
+                            </div>
+                            
+                            <!-- Origin Field -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name="Origin"></lightning-input-field>
+                            </div>
+                            
+                            <!-- Comments Field - Simple Text Area -->
+                            <div class="slds-col slds-size_1-of-1">
+                                <!-- <lightning-input-field 
+                                    field-name="Comments"
+                                    variant="label-stacked">
+                                </lightning-input-field> -->
+                                <lightning-input-field
+                                    field-name="Description"
+                                    variant="label-stacked">
+                                </lightning-input-field>
+                                <div class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                    <lightning-icon icon-name="utility:info" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                    Add internal comments for case tracking and agent communication
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-modal__footer">
+                            <lightning-button 
+                                label="Cancel" 
+                                onclick={handleCancel}
+                                variant="neutral"
+                                disabled={isLoading}>
+                            </lightning-button>
+                            <lightning-button 
+                                type="submit"
+                                label="Save Changes" 
+                                variant="brand"
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
